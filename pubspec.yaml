@@ -1,0 +1,255 @@
+name: dozen_diamond
+description: A new Flutter project.
+
+# The following line prevents the package from being accidentally published to
+# pub.dev using `flutter pub publish`. This is preferred for private packages.
+publish_to: "none" # Remove this line if you wish to publish to pub.dev
+
+# The following defines the version and build number for your application.
+# A version number is three numbers separated by dots, like 1.2.43
+# followed by an optional build number separated by a +.
+# Both the version and the builder number may be overridden in flutter
+# build by specifying --build-name and --build-number, respectively.
+# In Android, build-name is used as versionName while build-number used as versionCode.
+# Read more about Android versioning at https://developer.android.com/studio/publish/versioning
+# In iOS, build-name is used as CFBundleShortVersionString while build-number used as CFBundleVersion.
+# Read more about iOS versioning at
+# https://developer.apple.com/library/archive/documentation/General/Reference/InfoPlistKeyReference/Articles/CoreFoundationKeys.html
+version: 1.0.59+105
+
+environment:
+#  sdk: ">=2.17.1 <3.0.0"
+  sdk: ">=3.9.0 <4.0.0"
+
+# Dependencies specify other packages that your package needs in order to work.
+# To automatically upgrade your package dependencies to the latest versions
+# consider running `flutter pub upgrade --major-versions`. Alternatively,
+# dependencies can be manually updated by changing the version numbers below to
+# the latest version available on pub.dev. To see which dependencies have newer
+# versions available, run `flutter pub outdated`.
+dependencies:
+  flutter:
+    sdk: flutter
+
+  # The following adds the Cupertino Icons font to your application.
+  # Use with the CupertinoIcons class for iOS style icons.
+  cupertino_icons: ^1.0.2
+  intl: 0.20.2 # ^0.18.0
+  device_info_plus:
+  android_id:
+#  firebase_core:
+  firebase_core: ^4.1.0 # 3.12.1
+#  firebase_messaging:
+#  firebase_messaging: ^15.2.9
+  firebase_messaging: ^16.0.1 # 15.2.3
+  google_fonts: ^6.2.1
+  # intl: ^0.15.2
+  font_awesome_flutter: ^10.10.0 # 10.1.0
+#  razorpay_flutter: ^1.3.5
+  razorpay_flutter: ^1.4.0
+  #  fl_chart: ^0.61.0
+  fl_chart: ^1.1.0 # 0.69.2
+  candlesticks: ^2.1.0
+#  http: ^0.13.5
+  http: ^1.5.0 # 1.4.0
+  provider: ^6.1.5+1 # 6.0.3
+  anim_search_bar: ^2.0.2
+#  youtube_player_flutter: ^8.1.1
+  tab_indicator_styler: ^2.0.0
+  data_table_2: ^2.3.10
+#  awesome_dialog: ^3.2.1  # 3.0.2
+  url_launcher: ^6.3.2 # 6.1.7
+  pinput: ^5.0.2 # 2.2.21
+  shared_preferences: ^2.0.16
+  #  pin_code_fields: ^7.4.0
+  pin_code_fields: ^8.0.1
+  local_auth: ^2.1.3
+  socket_io_client: ^3.1.2 # 2.0.1
+  top_modal_sheet: ^2.0.1
+  fluttertoast: ^8.2.1
+  number_paginator: ^1.1.1 # 0.2.3
+  validators: ^3.0.0
+  flutter_pw_validator: ^1.6.0
+  flutter_advanced_switch: ^3.0.1
+  package_info_plus: ^8.3.1 # 4.2.0
+  csv: ^6.0.0
+  flutter_tex: ^5.1.10 # 5.1.8
+  flutter_secure_storage: ^9.2.4
+  modal_bottom_sheet: ^3.0.0
+  image_picker: ^1.2.0 # 1.1.2
+#  google_mlkit_text_recognition:
+#  google_mlkit_text_recognition: ^0.15.0
+  flutter_svg:
+  #  lottie: 1.0.0
+  #  lottie: ^2.7.0
+#  flutter_local_notifications: ^18.0.1
+  flutter_local_notifications: ^19.4.1 # 19.3.0
+  showcaseview: ^4.0.1
+  get: ^4.7.2
+  connectivity_plus: ^6.1.5 # 6.1.3
+#  connectivity_plus: ^6.1.4
+  google_sign_in: ^7.1.1
+#  flutter_facebook_auth:
+  flutter_facebook_auth: ^7.1.2
+  shimmer: ^3.0.0
+#  google_sign_in_web: ^0.12.4+4
+  web_socket_channel: ^3.0.3
+  sms_autofill: ^2.4.1
+#  flutter_inappwebview: ^6.1.5
+  firebase_crashlytics: ^5.0.1 # 4.3.9
+  firebase_analytics: ^12.0.1 # 11.5.2
+  sign_in_with_apple: ^7.0.1
+  auto_size_text: ^3.0.0
+  bottom_picker: ^4.1.1
+  uuid: ^4.4.2
+  file_picker: ^10.3.7
+  flutter_markdown_plus: ^1.0.7
+
+dependency_overrides:
+  win32: ^5.5.4
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  csv: ^6.0.0
+  flutter_launcher_icons: "^0.13.1"
+#  webdev: ^3.0.7+1
+#  webdev: ^3.7.2
+
+flutter_launcher_icons:
+  android: "launcher_icon"
+  ios: true
+  image_path_android: "lib/global/assets/logos/dozendiamond_logo2.jpeg"
+  image_path_ios: "lib/global/assets/logos/dozendiamond_logo_ios.jpeg"
+  min_sdk_android: 21
+  remove_alpha_ios: true
+  adaptive_icon_foreground: "lib/global/assets/logos/dozendiamond_logo2.jpeg"
+  adaptive_icon_background: "#000000"
+
+  # The "flutter_lints" package below contains a set of recommended lints to
+  # encourage good coding practices. The lint set provided by the package is
+  # activated in the `analysis_options.yaml` file located at the root of your
+  # package. See that file for information about deactivating specific lint
+  # rules and activating additional ones.
+
+# For information on the generic Dart part of this file, see the
+# following page: https://dart.dev/tools/pub/pubspec
+
+# The following section is specific to Flutter packages.
+flutter:
+  # The following line ensures that the Material Icons font is
+  # included with your application, so that you can use the icons in
+  # the material Icons class.
+  uses-material-design: true
+
+  # To add assets to your application, add an assets section, like this:
+  assets:
+    - assets/
+    - lib/Splash_Screen/assets/dozen-unscreen.gif
+    - lib/global/assets/images/home_bg1.png
+    - lib/global/assets/logos/dozendiamond_logo.jpeg
+    - lib/global/assets/logos/kosh_logo_with_bg.jpeg
+    - lib/global/assets/logos/kosh_logo_without_bg.png
+    - lib/ZL_register/assets/images/flags1/
+    - lib/global/assets/images/animatedtrade.gif
+    - lib/global/assets/images/home_bg.png
+    - lib/global/assets/logos/kosh_logo_without_bg.png
+    - lib/global/assets/images/img1.png
+    - lib/global/assets/images/img1.jpeg
+    - lib/global/assets/images/gp_logo.png
+    - lib/global/assets/images/bhim_upi_icon.png
+    - lib/global/assets/images/wallet_image.png
+    - lib/global/assets/icons/filter.png
+    - lib/global/assets/icons/notification_asset.png
+    - lib/global/assets/icons/order_book.png
+    - lib/global/assets/logos/ladder.png
+    - lib/global/assets/icons/docs.png
+    - lib/global/assets/icons/ladder_icon.gif
+    - lib/global/assets/icons/sort.png
+    - lib/global/assets/icons/money.png
+    - lib/global/assets/icons/ladder4.png
+    - lib/global/assets/icons/sell_buy_icon.png
+    - lib/global/assets/icons/frequency.png
+    - lib/global/assets/icons/setting.png
+    - lib/global/assets/icons/diamond1.png
+    - lib/global/assets/icons/bullet.png
+    - lib/global/assets/icons/suitcase.png
+    - lib/global/assets/images/home_bg1.png
+    - lib/global/assets/logos/logodrawer1.png
+    - lib/global/assets/icons/ic_profile.png
+    - lib/global/assets/images/ic_profile.png
+    - lib/global/assets/images/repurchase.png
+    - lib/global/assets/icons/ic_wallet.png
+    - lib/global/assets/icons/ic_investments.png
+    - lib/global/assets/icons/ic_popular_icon.png
+    - lib/global/assets/icons/ic_market.png
+    - lib/global/assets/icons/ic_news.png
+    - lib/global/assets/icons/ic_terms_of_use.png
+    - lib/global/assets/icons/ic_privacy_policy.png
+    - lib/global/assets/icons/ic_subscribe.png
+    - lib/global/assets/icons/ic_change_password.png
+    - lib/global/assets/icons/ic_faqs.png
+    - lib/global/assets/icons/ic_support.png
+    - lib/global/assets/icons/ic_logout.png
+    - lib/global/assets/icons/ic_about.png
+    - lib/global/assets/icons/ic_about.png
+    - lib/global/assets/icons/ic_loss.png
+    - lib/global/assets/icons/ic_profit.png
+    - lib/global/assets/icons/data-analytics-icon.png
+    - lib/global/assets/images/
+    - lib/global/assets/lottie/
+    - lib/global/assets/icons/ladder_one_click_icon.png
+    - lib/AB_Ladder/assets/
+    - lib/ZH_Analysis/assets/JSON/
+    - lib/ZH_analysisProfitVsPrice/assets/
+    - lib/ZH_analysisProfitVsPrice/assets/JSON/
+    - lib/ZH_analysisPriceVsNumberOfStocks/assets/
+    - lib/ZH_analysisPriceVsNumberOfStocks/assets/JSON/
+    - lib/ZH_analysisUnsettledClosestBuy/assets/
+    - lib/ZH_analysisUnsettledClosestBuy/assets/JSON/
+    - lib/ZH_analysisSettledClosestTrade/assets/
+    - lib/ZH_analysisSettledClosestTrade/assets/JSON/
+    - lib/ZH_analysisUnsettledRecentBuy/assets/
+    - lib/ZH_analysisUnsettledRecentBuy/assets/JSON/
+    - lib/ZH_analysisSettledRecentTrade/assets/
+    - lib/ZH_analysisSettledRecentTrade/assets/JSON/
+    - lib/F_Funds/assets/
+    - lib/ZH_analysisTradeAnalytics/assets/
+    - lib/ZH_analysisTradeAnalytics/assets/JSON/
+    - lib/ZH_analysisAlpha/assets/
+    - lib/ZH_analysisAlpha/assets/JSON/
+    - lib/manage_brokers/assets/
+    - lib/welcome_screens/assets/images/
+    - lib/welcome_screens/assets/icons/
+    - lib/DD_Navigation/assets/
+    - lib/watchlist/assets/
+    - lib/create_ladder_detailed/assets/images/
+    - lib/login/assets/images/
+    - lib/terms_of_use/assets/
+  # An image asset can refer to one or more resolution-specific "variants", see
+  # https://flutter.dev/global/assets-and-images/#resolution-aware
+
+  # For details regarding adding global/assets from package dependencies, see
+  # https://flutter.dev/global/assets-and-images/#from-packages
+
+  # To add custom fonts to your application, add a fonts section here,
+  # in this "flutter" section. Each entry in this list should have a
+  # "family" key with the font family name, and a "fonts" key with a
+  # list giving the asset and other descriptors for the font. For
+  # example:
+  fonts:
+    - family: Poppins
+      fonts:
+        - asset: lib/global/assets/fonts/Poppins/Poppins-Regular.ttf
+        - asset: lib/global/assets/fonts/Poppins/Poppins-Bold.ttf
+          weight: 700
+        - asset: lib/global/assets/fonts/Poppins/Poppins-Italic.ttf
+          style: italic
+
+    - family: Britanica
+      fonts:
+        - asset: lib/global/assets/fonts/Britanica/Britanica-Bold Regular.ttf
+        - asset: lib/global/assets/fonts/Britanica/Britanica-ExtraBold Regular.ttf
+          weight: 700
+  # For details regarding fonts from package dependencies,
+  # see https://flutter.dev/custom-fonts/#from-packages

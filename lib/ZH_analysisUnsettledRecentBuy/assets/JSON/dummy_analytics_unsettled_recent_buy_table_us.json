@@ -1,0 +1,35 @@
+{
+  "status": true,
+  "msg": "Unsettled recent buy table retrieved successfully",
+  "settled_buy_profit": "50000.00",
+  "unsettled_cash": "150000.00",
+  "unsettled_stocks": 250,
+  "average_unsettled_cost": "3200.50",
+  "current_price": "3400.00",
+  "data": [
+    {
+      "trade_number": 1,
+      "stock_name": "MSFT",
+      "price": "3100.50",
+      "bought": 100,
+      "type": "buy",
+      "gain": "15000.00"
+    },
+    {
+      "trade_number": 2,
+      "stock_name": "MSFT",
+      "price": "3200.00",
+      "bought": 80,
+      "type": "buy",
+      "gain": "12000.00"
+    },
+    {
+      "trade_number": 3,
+      "stock_name": "MSFT",
+      "price": "3300.75",
+      "bought": 70,
+      "type": "buy",
+      "gain": "10000.00"
+    }
+  ]
+}

@@ -1,0 +1,70 @@
+{
+  "project_info": {
+    "project_number": "486769585980",
+    "project_id": "dozen-diamonds-5b32d",
+    "storage_bucket": "dozen-diamonds-5b32d.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:486769585980:android:27345b7fbe8057c1ed3839",
+        "android_client_info": {
+          "package_name": "com.dozen_diamonds.kosh"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "486769585980-31u32d5bjk1o0n4104ao25dpfi6qus8o.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.dozen_diamonds.kosh",
+            "certificate_hash": "a1e774e320a0d4a74246e9cd94f9eb662036b428"
+          }
+        },
+        {
+          "client_id": "486769585980-pj9lp06mgjos8p881s7eh08k4ngp233l.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.dozen_diamonds.kosh",
+            "certificate_hash": "5f511c895bffd7f5d8c3571123fe3e9718661c24"
+          }
+        },
+        {
+          "client_id": "486769585980-snk3mckvbc5c9tus8ajs1fj613cflgp5.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.dozen_diamonds.kosh",
+            "certificate_hash": "fd280789018a7e0631793b2240b13936e1583548"
+          }
+        },
+        {
+          "client_id": "486769585980-9pdlherrdr1ihv8tbp8v1qgjip1r070n.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyChqu7Hx4tw3CrVUeisA8iVXgwdUE908uk"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "486769585980-9pdlherrdr1ihv8tbp8v1qgjip1r070n.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "486769585980-k3i1n8tqdlhk71coei5ufvfgfisvgrug.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.dozendiamonds.kosh"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

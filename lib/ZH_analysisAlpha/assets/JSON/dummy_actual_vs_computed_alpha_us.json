@@ -1,0 +1,82 @@
+{
+  "status": true,
+  "message": "Alpha vs Computed Data for TCS retrieved successfully",
+  "success": {
+    "description": "Alpha computation successful",
+    "suggestion": "No further action needed"
+  },
+  "data": [
+    {
+      "trade_number": 1,
+      "price": "600.00",
+      "type": "Buy",
+      "stocks_held": 900,
+      "sum_of_cash_gain": 5000,
+      "profit": "388750",
+      "alpha": "783.33"
+    },
+    {
+      "trade_number": 2,
+      "price": "575.00",
+      "type": "Buy",
+      "stocks_held": 950,
+      "sum_of_cash_gain": 7000,
+      "profit": "353750",
+      "alpha": "1016.66667"
+    },
+    {
+      "trade_number": 3,
+      "price": "550.00",
+      "type": "Buy",
+      "stocks_held": 1000,
+      "sum_of_cash_gain": 4500,
+      "profit": "301250",
+      "alpha": "1450"
+    },
+    {
+      "trade_number": 4,
+      "price": "525.00",
+      "type": "Sell",
+      "stocks_held": 1050,
+      "sum_of_cash_gain": 6000,
+      "profit": "260000",
+      "alpha": "1716.666"
+    },
+    {
+      "trade_number": 5,
+      "price": "500.00",
+      "type": "Sell",
+      "stocks_held": 1100,
+      "sum_of_cash_gain": 6000,
+      "profit": "232500",
+      "alpha": "1616.666"
+    },
+    {
+      "trade_number": 6,
+      "price": "475.00",
+      "type": "Buy",
+      "stocks_held": 1150,
+      "sum_of_cash_gain": 6000,
+      "profit": "203750",
+      "alpha": "1300"
+    },
+    {
+      "trade_number": 7,
+      "price": "450.00",
+      "type": "Sell",
+      "stocks_held": 1200,
+      "sum_of_cash_gain": 6000,
+      "profit": "-25000",
+      "alpha": "3800"
+    },
+    {
+      "trade_number": 8,
+      "price": "425.00",
+      "type": "Buy",
+      "stocks_held": 1250,
+      "sum_of_cash_gain": 6000,
+      "profit": "-56250",
+      "alpha": "3850"
+    }
+  ]
+}

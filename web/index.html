@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <!--
+    If you are serving your web app in a path other than the root, change the
+    href value below to reflect the base path you are serving from.
+
+    The path provided below has to start and end with a slash "/" in order for
+    it to work correctly.
+
+    For more details:
+    * https://developer.mozilla.org/en-US/docs/Web/HTML/Element/base
+
+    This is a placeholder for base href that will be replaced by the value of
+    the `--base-href` argument provided to `flutter build`.
+  -->
+  <base href="$FLUTTER_BASE_HREF">
+  <!-- <base href="/webapp/"> -->
+  <meta charset="UTF-8">
+  <meta content="IE=Edge" http-equiv="X-UA-Compatible">
+  <meta name="description" content="A new Flutter project.">
+
+  <!-- iOS meta tags & icons -->
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+  <meta name="apple-mobile-web-app-title" content="dozen_diamonds">
+  <link rel="apple-touch-icon" href="icons/Icon-192.png">
+
+  <!-- Favicon -->
+  <!--  <link rel="icon" type="image/png" href="favicon.png"/>-->
+  <link rel="icon" type="image/png" href="dd_logo.png"/>
+
+  <title>dozen_diamonds</title>
+  <link rel="manifest" href="manifest.json">
+
+  <script>
+    // The value below is injected by flutter build, do not touch.
+    var serviceWorkerVersion = '{{flutter_service_worker_version}}';
+  </script>
+  <!-- This script adds the flutter initialization JS code -->
+  <script src="flutter.js" defer></script>
+
+  <script src="assets/packages/flutter_tex/core/flutter_tex.js"></script>
+  <script src="assets/packages/flutter_tex/core/mathjax_core.js"></script>
+</head>
+<body>
+
+  <script src="assets/packages/flutter_tex/js/flutter_tex.js"></script>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.15.2/dist/katex.min.css" />
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.15.2/dist/katex.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+  <script type="text/javascript">window.flutterWebRenderer = "canvaskit";</script>
+
+  <script>
+    window.addEventListener('load', async function() {
+      const engineInitializer = await _flutter.loader.load({
+        entrypointUrl: "main.dart.js"
+      });
+      const appRunner = await engineInitializer.initializeEngine();
+      await appRunner.runApp();
+    });
+  </script>
+
+  <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+
+  <script>
+    function openRazorpayCheckout(optionsJson) {
+
+      var options = JSON.parse(optionsJson);
+
+      // Define success handler
+      options.handler = function (response) {
+        // Call Flutter's success callback
+        if (window.paymentSuccessHandler) {
+          window.paymentSuccessHandler(response);
+        }
+      };
+
+      // Define failure handler
+      options.modal = {
+        ondismiss: function () {
+          if (window.paymentFailureHandler) {
+            window.paymentFailureHandler();
+          }
+        }
+      };
+
+      var rzp1 = new Razorpay(options);
+      rzp1.open();
+    }
+  </script>
+  <script src="https://apis.google.com/js/platform.js" async defer></script>
+  <meta name="google-signin-client_id" content="486769585980-9pdlherrdr1ihv8tbp8v1qgjip1r070n.apps.googleusercontent.com">
+  <!--  <div class="g-signin2" data-onsuccess="handleCredentialResponse"></div>-->
+  <script src="https://accounts.google.com/gsi/client" async defer></script>
+  <script src="flutter_bootstrap.js" async></script>
+</body>
+</html>
