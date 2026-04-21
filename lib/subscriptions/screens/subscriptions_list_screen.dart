@@ -78,6 +78,10 @@ void openCheckout(String subscriptionId, String planId) {
   try {
     if (kIsWeb) {
       // Web implementation if needed
+        //       subscriptionProvider.isSubscriptionButtonLoading = false;
+        // openRazorpayCheckoutWeb(options);
+
+        // js.context.callMethod('openRazorpayCheckout', [jsonEncode(options)]);
     } else {
       // Store current plan ID before opening Razorpay
       _currentPlanId = planId;

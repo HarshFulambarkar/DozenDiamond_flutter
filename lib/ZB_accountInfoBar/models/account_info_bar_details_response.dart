@@ -149,9 +149,10 @@ class Data extends ApiRequestResponse {
     accountCashNeededForActiveLadders = double.tryParse(
             json['account_cash_needed_for_active_ladders'] ?? "0.0") ??
         0.0;
-    accountTransactionCashLeft = double.tryParse(
-        json['account_transaction_cash_left'].toString()) ??
-        0.0;
+    final transactionCashLeftValue = json['account_transaction_cash_left'];
+      accountTransactionCashLeft = transactionCashLeftValue != null 
+      ? double.tryParse(transactionCashLeftValue.toString()) ?? 0.0 
+      : 0.0;
     accountCashNeededForInactiveLadders = double.tryParse(
             json['account_cash_needed_for_inactive_ladders'] ?? "0.0") ??
         0.0;
@@ -193,8 +194,27 @@ class Data extends ApiRequestResponse {
         currentPrices.add(new CurrentPrices().fromJson(v));
       });
     }
-    totalAccountValue = json['total_account_value'] ?? 0;
-    cumulativeCharges = json['cumulative_charges'] ?? 0;
+    final totalAccountValueRaw = json['total_account_value'];
+  if (totalAccountValueRaw is int) {
+    totalAccountValue = totalAccountValueRaw.toDouble();
+  } else if (totalAccountValueRaw is double) {
+    totalAccountValue = totalAccountValueRaw;
+  } else if (totalAccountValueRaw is String) {
+    totalAccountValue = double.tryParse(totalAccountValueRaw) ?? 0.0;
+  } else {
+    totalAccountValue = 0.0;
+  }
+  
+  final cumulativeChargesRaw = json['cumulative_charges'];
+  if (cumulativeChargesRaw is int) {
+    cumulativeCharges = cumulativeChargesRaw.toDouble();
+  } else if (cumulativeChargesRaw is double) {
+    cumulativeCharges = cumulativeChargesRaw;
+  } else if (cumulativeChargesRaw is String) {
+    cumulativeCharges = double.tryParse(cumulativeChargesRaw) ?? 0.0;
+  } else {
+    cumulativeCharges = 0.0;
+  }
     accountCashWithdrawn = double.tryParse(json['account_cash_withdrawn']) ?? 0;
 
     return this;

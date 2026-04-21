@@ -192,6 +192,8 @@ String get apiErrorMessage => _apiErrorMessage;
   Map<String, bool> _isRecommendedParametersEnabledScreen1 = {};
   Map<String, bool> get isRecommendedParametersEnabledScreen1 =>
       _isRecommendedParametersEnabledScreen1;
+        Map<int, bool> _cashAllocatedValidMap = {};
+  Map<int, bool> get cashAllocatedValidMap => _cashAllocatedValidMap;
 
   set isRecommendedParametersEnabledScreen1(Map<String, bool> value) {
 
@@ -486,6 +488,21 @@ String get apiErrorMessage => _apiErrorMessage;
     _priorBuyRateOfSell = value;
     notifyListeners();
   }
+    bool isCashAllocatedValid(String value) {
+    if (value.isEmpty) return false;
+    // Remove commas added by currency formatter
+    final clean = value.replaceAll(',', '');
+    // Reject if multiple decimal points exist
+    if ('.'.allMatches(clean).length > 1) return false;
+    final parsed = double.tryParse(clean);
+    // Must be a valid number and greater than 0
+    return parsed != null && parsed > 0;
+  }
+    void updateCashAllocatedValidity(int clpTickerId, String value) {
+    final isValid = isCashAllocatedValid(value);
+    _cashAllocatedValidMap[clpTickerId] = isValid;
+    notifyListeners();
+  }
 
   double _priorBuyXDash = 0;
 
@@ -518,6 +535,7 @@ String get apiErrorMessage => _apiErrorMessage;
     _insufficientCashAllocated = value;
     notifyListeners();
   }
+
 
   List<StockRecommendedParametersData> _stockRecommendedParametersDataList = [];
 

@@ -84,12 +84,14 @@ LadderStepsForPlot determineHorizontalLadderSteps(
   }
 
   print("i am checking below");
-  print(stepsBelowInitialBuy);
-  print(minHistoricalValue);
-  print(maxHistoricalValue);
+  // print(stepsBelowInitialBuy);
+  // print(minHistoricalValue);
+  // print(maxHistoricalValue);
+  print("Length of ladderStepsToBeIncluded: ${ladderStepsToBeIncluded.length}");
 
   final firstLadderValue = ladderStepsToBeIncluded.first;
   final lastLadderValue = ladderStepsToBeIncluded.last;
+  print("came till here");
 
   double maxYValueForPlot =
       firstLadderValue + (stepSize / 2) < maxHistoricalValue
@@ -99,7 +101,7 @@ LadderStepsForPlot determineHorizontalLadderSteps(
       lastLadderValue - (stepSize / 2) > minHistoricalValue
           ? minHistoricalValue
           : lastLadderValue - (stepSize / 2);
-
+print("here is the maxYValueForPlot ${maxYValueForPlot} and here is the minYValueForPlot ${minYValueForPlot}");
   return LadderStepsForPlot(
       ladderStepsToBeIncluded, maxYValueForPlot, minYValueForPlot);
 }

@@ -588,12 +588,16 @@ class _CreateLadder2NewState extends State<CreateLadder2New> {
                               borderRadius: 8,
                               hintText: '',
                               onChanged: (value) {
+                                String cleanValue = value.replaceAll(',', '');
+        double? parsed = double.tryParse(cleanValue);
 
-                                if (value.isEmpty || value == '.') {
-                                  _stateProvider!.ladderCreationParametersScreen1.clpInitialPurchasePrice!.text = '1';
-                                  _stateProvider!.ladderCreationParametersScreen1.clpInitialPurchasePrice!.selection = TextSelection.fromPosition(
-                                    TextPosition(offset: _stateProvider!.ladderCreationParametersScreen1.clpInitialPurchasePrice!.text.length),
-                                  );
+                                if (value.isEmpty || value == '.' || parsed! <= 0) {
+          // Reset to '1' and move cursor to the end
+          _stateProvider!.ladderCreationParametersScreen1.clpInitialPurchasePrice!.text = '1';
+          _stateProvider!.ladderCreationParametersScreen1.clpInitialPurchasePrice!.selection =
+              TextSelection.fromPosition(
+            TextPosition(offset: 1),
+          );
                                 }
 
                                 _stateProvider!.updateTargetPriceMultiplier(
@@ -613,192 +617,6 @@ class _CreateLadder2NewState extends State<CreateLadder2New> {
 
                     ],
                   ),
-
-                  // SizedBox(
-                  //   height: 5,
-                  // ),
-
-                  // Row(
-                  //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  //   children: [
-                  //
-                  //     Row(
-                  //       children: [
-                  //         Text(
-                  //           TranslationKeys.currentPrice,
-                  //           style: GoogleFonts.poppins(
-                  //             fontWeight: FontWeight.w300,
-                  //             fontSize: 14,
-                  //             color: (themeProvider.defaultTheme)?Colors.black:Color(0xffa2b0bc),
-                  //           ),
-                  //         ),
-                  //
-                  //         SizedBox(
-                  //           width: 3,
-                  //         ),
-                  //
-                  //         InkWell(
-                  //           onTap: () {
-                  //             currentPriceKey.currentState?.ensureTooltipVisible();
-                  //           },
-                  //           child: Tooltip(
-                  //             key: currentPriceKey,
-                  //             message: TranslationKeys.stockCurrentPrice,
-                  //             margin: EdgeInsets.only(left: 20, right: 20),
-                  //             preferBelow: false,
-                  //             child: Icon(
-                  //               Icons.info_outline,
-                  //               size: 15,
-                  //               color: (themeProvider.defaultTheme)?Color(0xff6e6e6e):Color(0xffa2b0bc),
-                  //             ),
-                  //           ),
-                  //         )
-                  //       ],
-                  //     ),
-                  //
-                  //
-                  //     IgnorePointer(
-                  //       child: SizedBox(
-                  //         height: 30,
-                  //         width: screenWidth * 0.3,
-                  //         child: MyTextField(
-                  //           controller: TextEditingController(text: "${currencyConstantsProvider.currency}${_stateProvider!.ladderCreationParametersScreen1.currentPrice}"),
-                  //           labelText : "",
-                  //           isEnabled: true,
-                  //           maxLength: 14,
-                  //           elevation: 0,
-                  //           textInputFormatters: <TextInputFormatter>[
-                  //             FilteringTextInputFormatter.allow(
-                  //               RegExp(r'^[0-9,\.]+$'),
-                  //             ),
-                  //             NumberToCurrencyFormatter()
-                  //           ],
-                  //           keyboardType: TextInputType.number,
-                  //           textStyle: GoogleFonts.poppins(
-                  //             fontWeight: FontWeight.w400,
-                  //             fontSize: 14,
-                  //             color: (themeProvider.defaultTheme)?Colors.black:Color(0xfff0f0f0),
-                  //           ),
-                  //           // borderColor: (themeProvider.defaultTheme)?Color(0xffDADDE6):Color(0xff2c2c31),
-                  //           // fillColor: (themeProvider.defaultTheme)?Color(0xffDADDE6):Color(0xff2c2c31),
-                  //           borderColor: (themeProvider.defaultTheme)?Color(0xffbedaf0):Color(0xff1b1b1b),
-                  //           fillColor: (themeProvider.defaultTheme)?Color(0xffbedaf0):Color(0xff1b1b1b),
-                  //           isFilled: true,
-                  //           margin: EdgeInsets.zero,
-                  //           contentPadding: EdgeInsets.only(left: 12, bottom: 5),
-                  //           focusedBorderColor: Color(0xff5cbbff),
-                  //           showLeadingWidget: false  ,
-                  //           showTrailingWidget: false,
-                  //           // prefixText: currencyConstantsProvider.currency,
-                  //
-                  //           counterText: "",
-                  //           borderRadius: 8,
-                  //           hintText: '',
-                  //           onChanged: (value) {
-                  //
-                  //           },
-                  //           onFieldSubmitted: (value) {
-                  //
-                  //           },
-                  //         ),
-                  //       ),
-                  //     )
-                  //
-                  //   ],
-                  // ),
-
-                  // SizedBox(
-                  //   height: 5,
-                  // ),
-
-                  // Row(
-                  //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  //   children: [
-                  //
-                  //     Row(
-                  //       children: [
-                  //         Text(
-                  //           TranslationKeys.minimumPrice,
-                  //           style: GoogleFonts.poppins(
-                  //             fontWeight: FontWeight.w300,
-                  //             fontSize: 14,
-                  //             color: (themeProvider.defaultTheme)?Colors.black:Color(0xffa2b0bc),
-                  //           ),
-                  //         ),
-                  //
-                  //         SizedBox(
-                  //           width: 3,
-                  //         ),
-                  //
-                  //         InkWell(
-                  //           onTap: () {
-                  //             minimumPriceTooltipKey.currentState?.ensureTooltipVisible();
-                  //           },
-                  //           child: Tooltip(
-                  //             key: minimumPriceTooltipKey,
-                  //             message: TranslationKeys.itIsTheLowestPriceAtWhichAStockCanBeBoughtInTheLadder,
-                  //             margin: EdgeInsets.only(left: 20, right: 20),
-                  //             preferBelow: false,
-                  //             child: Icon(
-                  //               Icons.info_outline,
-                  //               size: 15,
-                  //               color: (themeProvider.defaultTheme)?Color(0xff6e6e6e):Color(0xffa2b0bc),
-                  //             ),
-                  //           ),
-                  //         )
-                  //       ],
-                  //     ),
-                  //
-                  //
-                  //     IgnorePointer(
-                  //       child: SizedBox(
-                  //         height: 30,
-                  //         width: screenWidth * 0.3,
-                  //         child: MyTextField(
-                  //           controller: TextEditingController(text: "${currencyConstantsProvider.currency}${_stateProvider!.minimumPrice}"),
-                  //           labelText : "",
-                  //           isEnabled: true,
-                  //           maxLength: 14,
-                  //           elevation: 0,
-                  //           textInputFormatters: <TextInputFormatter>[
-                  //             FilteringTextInputFormatter.allow(
-                  //               RegExp(r'^[0-9,\.]+$'),
-                  //             ),
-                  //             NumberToCurrencyFormatter()
-                  //           ],
-                  //           keyboardType: TextInputType.number,
-                  //           textStyle: GoogleFonts.poppins(
-                  //             fontWeight: FontWeight.w400,
-                  //             fontSize: 14,
-                  //             color: (themeProvider.defaultTheme)?Colors.black:Color(0xfff0f0f0),
-                  //           ),
-                  //           // borderColor: (themeProvider.defaultTheme)?Color(0xffDADDE6):Color(0xff2c2c31),
-                  //           // fillColor: (themeProvider.defaultTheme)?Color(0xffDADDE6):Color(0xff2c2c31),
-                  //           borderColor: (themeProvider.defaultTheme)?Color(0xffbedaf0):Color(0xff1b1b1b),
-                  //           fillColor: (themeProvider.defaultTheme)?Color(0xffbedaf0):Color(0xff1b1b1b),
-                  //           isFilled: true,
-                  //           margin: EdgeInsets.zero,
-                  //           contentPadding: EdgeInsets.only(left: 12, bottom: 5),
-                  //           focusedBorderColor: Color(0xff5cbbff),
-                  //           showLeadingWidget: false  ,
-                  //           showTrailingWidget: false,
-                  //           // prefixText: currencyConstantsProvider.currency,
-                  //
-                  //           counterText: "",
-                  //           borderRadius: 8,
-                  //           hintText: '',
-                  //           onChanged: (value) {
-                  //
-                  //           },
-                  //           onFieldSubmitted: (value) {
-                  //
-                  //           },
-                  //         ),
-                  //       ),
-                  //     )
-                  //
-                  //   ],
-                  // ),
 
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,

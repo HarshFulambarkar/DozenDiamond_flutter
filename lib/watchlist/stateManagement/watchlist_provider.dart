@@ -226,6 +226,8 @@ class WatchlistProvider extends ChangeNotifier {
 
   Future<bool> addToWatchlist(List<SelectedTickerModel> selectedTickers, BuildContext context) async {
     try {
+      print("We came till the method");
+      print("Selected Tickers length: ${selectedTickers.length}");
       // List<Map<String, dynamic>> dataList = [];
       List<String> dataList = [];
       for (int i = 0; i < selectedTickers.length; i++) {
@@ -251,6 +253,9 @@ class WatchlistProvider extends ChangeNotifier {
       };
 
       webSocketServiceProvider.sendMessage(messageData);
+
+      await Future.delayed(Duration(milliseconds: 500));
+      await fetchWatchList();
 
       Fluttertoast.showToast(msg: "added to watchlist" ?? "");
 

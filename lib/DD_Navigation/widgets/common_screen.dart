@@ -64,7 +64,7 @@ import './nav_drawer.dart';
 import '../../ZZZZY_TradingMainPage/screens/main_page.dart';
 import '../../F_Funds/screens/addFunds.dart';
 import '../../ZH_Analysis/screens/select_analysis_type.dart';
-import '../../ZI_Search/screens/search_page.dart';
+import '../../ZI_Search/screens/search_page.dart' hide SearchPageNew;
 import '../../ZI_Search/screens/stock_by_sector_page.dart';
 import '../../broker_info/screens/broker_info_screen.dart';
 import '../../create_ladder_detailed/screens/createladderSelectStock.dart';

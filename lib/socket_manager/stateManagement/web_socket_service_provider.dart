@@ -245,6 +245,7 @@ class WebSocketServiceProvider with ChangeNotifier {
 
   Future<void> connect() async {
     try {
+      print("inside connect function");
       String domain = ApiConstant.wsDomain_new;
       final userId = await _getUserID;
       AuthenticationRestApiService authentication =

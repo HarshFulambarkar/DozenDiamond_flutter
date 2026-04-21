@@ -109,8 +109,6 @@ class _LadderTabNewState extends State<LadderTabNew> {
     super.dispose();
   }
 
-
-
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
@@ -1050,7 +1048,7 @@ Future<void> deleteLadder(Ladder ladderData) async {
   Widget buildLadderSection(BuildContext context, double screenWidth) {
     return Consumer<LadderProvider>(
       builder: (context, provider, child) {
-        print("provider.stockLadders.length ${provider.stockLadders.length}");
+        // print("provider.stockLadders.length ${provider.stockLadders.length}");
         final itemCount =
             provider.stockLadders.length + (_isLoadingMore ? 1 : 0);
         return ListView.builder(
@@ -1287,7 +1285,6 @@ Future<void> deleteLadder(Ladder ladderData) async {
     LadderListModel stockIndex,
     Ladder ladderIndex,
   ) {
-    print("buildSubLaddersSection ");
     return Padding(
       padding: const EdgeInsets.only(top: 5.0, bottom: 5, left: 6, right: 6),
       child: CustomContainer(

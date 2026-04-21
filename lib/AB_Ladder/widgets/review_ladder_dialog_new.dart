@@ -342,6 +342,7 @@ class _ReviewLadderDialogNewState extends State<ReviewLadderDialogNew> {
           stepSize: _stepSize,
           initialBuyQty: _initialBuyQty);
       print("here is the extraCash that is sending ${extraCash}");
+      // print(widget.numberOfStepsBelow);
       CreateLadderResponse? res = await LadderRestApiService().createLadder(
         CreateLadderRequest(
             ladTickerId: widget.tickerId,

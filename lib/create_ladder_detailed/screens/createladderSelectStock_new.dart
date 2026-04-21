@@ -595,6 +595,34 @@ Future<void> callInitialApi() async {
 
                       // -------------------------------------------
 
+                        // 1️⃣ Validate every cash allocated field
+            bool allFieldsValid = true;
+            String? invalidTicker;
+            for (int i = 0; i < stateProvider!.ladderCreationScreen1.length; i++) {
+              final tickerId = stateProvider!.ladderCreationScreen1[i].clpTickerId!;
+              final text = stateProvider!.cashAllocatedControllerList[tickerId]?.text ?? '';
+              if (!stateProvider!.isCashAllocatedValid(text)) {
+                allFieldsValid = false;
+                invalidTicker = stateProvider!.ladderCreationScreen1[i].clpTicker;
+                print("exit from here");
+                break;
+              }
+            }
+
+            // 2️⃣ Show error dialog if any field is invalid
+            if (!allFieldsValid) {
+              showDialog(
+                context: context,
+                barrierDismissible: false,
+                builder: (context) {
+                  return warningMessageDialog(
+                    "Please enter a valid cash amount greater than 0${invalidTicker != null ? ' for $invalidTicker' : ''}.",
+                    context,
+                  );
+                },
+              );
+              return; // Stop further execution
+            }
                       double cashForNewLadders =
                           stateProvider!.accountCashForNewLadders ?? 0.0;
                       double assignedCash =
@@ -1052,87 +1080,104 @@ Future<void> callInitialApi() async {
                             ),
 
                             SizedBox(
-                              height: 30,
-                              width: screenWidth * 0.3,
-                              child: MyTextField(
-                                isFilled: true,
-                                fillColor: (themeProvider.defaultTheme)?Color(0xffDADDE6):Colors.transparent,
-                                labelText: "",
-                                maxLength: 14,
-                                elevation: 0,
-                                controller: stateProvider
-                                    ?.cashAllocatedControllerList[listofData[stockListIndex].clpTickerId],
-                                textInputFormatters: <TextInputFormatter>[
-                                  FilteringTextInputFormatter.allow(
-                                    RegExp(r'^[0-9,\.]+$'),
-                                  ),
-                                  NumberToCurrencyFormatter()
-                                ],
-                                keyboardType: TextInputType.number,
-                                textStyle: GoogleFonts.poppins(
-                                  fontWeight: FontWeight.w400,
-                                  fontSize: 14,
-                                  color: (themeProvider.defaultTheme)?Colors.black:Color(0xfff0f0f0),
-                                ),
-                                borderColor: (themeProvider.defaultTheme)?Color(0xffDADDE6):Color(0xff2c2c31),
-                                margin: EdgeInsets.zero,
-                                contentPadding: EdgeInsets.only(left: 12, bottom: 5),
-                                focusedBorderColor: Color(0xff5cbbff),
-                                showLeadingWidget: false  ,
-                                showTrailingWidget: false,
+  height: 30,
+  width: screenWidth * 0.3,
+  child: MyTextField(
+    isFilled: true,
+    fillColor: (themeProvider.defaultTheme)
+        ? Color(0xffDADDE6)
+        : Colors.transparent,
+    labelText: "",
+    maxLength: 14,
+    elevation: 0,
+    controller: stateProvider
+        ?.cashAllocatedControllerList[listofData[stockListIndex].clpTickerId],
+    textInputFormatters: <TextInputFormatter>[
+      FilteringTextInputFormatter.allow(RegExp(r'^[0-9,\.]+$')),
+      NumberToCurrencyFormatter()
+    ],
+    keyboardType: TextInputType.number,
+    textStyle: GoogleFonts.poppins(
+      fontWeight: FontWeight.w400,
+      fontSize: 14,
+      color: (themeProvider.defaultTheme)
+          ? Colors.black
+          : Color(0xfff0f0f0),
+    ),
+    // 👇 Dynamic border color based on validation state
+    borderColor: (stateProvider?.cashAllocatedValidMap[
+                    listofData[stockListIndex].clpTickerId] ??
+                true)
+            ? (themeProvider.defaultTheme
+                ? Color(0xffDADDE6)
+                : Color(0xff2c2c31))
+            : Colors.red, // Red when invalid
+    margin: EdgeInsets.zero,
+    contentPadding: EdgeInsets.only(left: 12, bottom: 5),
+    focusedBorderColor: Color(0xff5cbbff),
+    showLeadingWidget: false,
+    showTrailingWidget: false,
+    prefixText: currencyConstants.currency,
+    counterText: "",
+    borderRadius: 8,
+    hintText: '',
+    onChanged: (value) {
+      // ✅ Validate this specific field first
+      stateProvider?.updateCashAllocatedValidity(
+        listofData[stockListIndex].clpTickerId!,
+        value,
+      );
 
-                                prefixText: currencyConstants.currency,
-
-                                counterText: "",
-                                borderRadius: 8,
-                                hintText: '',
-                                onChanged: (value) {
-                                  double sum = 0;
-
-                                  // Loop through all the controllers and sum the values
-                                  for (int i = 0;
-                                  i < stateProvider!.cashAllocatedControllerList.length;
-                                  i++) {
-                                    String textValue =
-                                        stateProvider?.cashAllocatedControllerList[listofData[i].clpTickerId]!.text ??
-                                            "0.0";
-                                    print("Text value at index $i: ${textValue.runtimeType}");
-
-                                    double parsedValue =
-                                        double.tryParse(textValue.replaceAll(",", "")) ?? 0.0;
-
-                                    sum += parsedValue;
-                                    stateProvider?.updateSumOfAssignedCashForLadder = sum;
-                                    print("Parsed value: $parsedValue");
-                                    if (sum >
-                                        (stateProvider!.accountCashForNewLadders ?? 0.0)) {
-                                      stateProvider!.insufficientCashAllocated = true;
-                                    } else {
-                                      stateProvider!.insufficientCashAllocated = false;
-                                    }
-                                  }
-
-                                  // Check if the sum exceeds the limit
-                                  if (stateProvider!.sumOfAssignedCashForLadder! >
-                                      (stateProvider?.accountCashForNewLadders ?? 0.0)) {
-                                    stateProvider!.isLimitExceeding = true;
-                                  } else {
-                                    stateProvider!.isLimitExceeding = false;
-                                  }
-                                },
-                                onFieldSubmitted: (value) {
-                                  if (!value.contains('.')) {
-                                    // Add .00 if the number doesn't have decimal points
-                                    stateProvider?.cashAllocatedControllerList[stockLadderProvData.clpTickerId]!
-                                        .text = value + ".00";
-                                  } else if (RegExp(r'^\d+(\.\d{1})$').hasMatch(value)) {
-                                    // Add one zero if the number has only one decimal digit
-                                    stateProvider?.cashAllocatedControllerList[stockLadderProvData.clpTickerId]!
-                                        .text = value + "0";
-                                  }
-                                },
-                              ),
-                            )
+      // Your existing sum calculation logic (unchanged)
+      double sum = 0;
+      for (int i = 0;
+          i < stateProvider!.cashAllocatedControllerList.length;
+          i++) {
+        String textValue = stateProvider
+                ?.cashAllocatedControllerList[listofData[i].clpTickerId]!
+                .text ??
+            "0.0";
+        double parsedValue =
+            double.tryParse(textValue.replaceAll(",", "")) ?? 0.0;
+        sum += parsedValue;
+        stateProvider?.updateSumOfAssignedCashForLadder = sum;
+        if (sum > (stateProvider!.accountCashForNewLadders ?? 0.0)) {
+          stateProvider!.insufficientCashAllocated = true;
+        } else {
+          stateProvider!.insufficientCashAllocated = false;
+        }
+      }
+      if (stateProvider!.sumOfAssignedCashForLadder! >
+          (stateProvider?.accountCashForNewLadders ?? 0.0)) {
+        stateProvider!.isLimitExceeding = true;
+      } else {
+        stateProvider!.isLimitExceeding = false;
+      }
+    },
+    onFieldSubmitted: (value) {
+      // Optional: re‑validate after auto‑formatting (adding .00)
+      if (!value.contains('.')) {
+        stateProvider
+            ?.cashAllocatedControllerList[stockLadderProvData.clpTickerId]!
+            .text = value + ".00";
+      } else if (RegExp(r'^\d+(\.\d{1})$').hasMatch(value)) {
+        stateProvider
+            ?.cashAllocatedControllerList[stockLadderProvData.clpTickerId]!
+            .text = value + "0";
+      }
+      // Validate again after the text has been changed
+      final newText = stateProvider
+          ?.cashAllocatedControllerList[stockLadderProvData.clpTickerId]!
+          .text;
+      if (newText != null) {
+        stateProvider?.updateCashAllocatedValidity(
+          stockLadderProvData.clpTickerId!,
+          newText,
+        );
+      }
+    },
+  ),
+)
                           ],
                         ),
                       )

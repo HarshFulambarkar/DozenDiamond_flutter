@@ -40,9 +40,11 @@ String amountStringSplittedFormatted(String? input) {
 
 String? amountToInrFormat(BuildContext context, double? amount) {
   // Get CurrencyConstants from Provider
+  // print("came here and converted price");
   CurrencyConstants currencyConstants = Provider.of<CurrencyConstants>(context);
 
   if (amount == null) {
+    // print("amount is null");
     return null;
   }
 

@@ -31,6 +31,7 @@ class PastDataGraphicalViewService {
 
       var url = Uri.parse("$baseUrl_v2$userId/past-data");
       var payload = json.encode(stockData.toJson());
+      print("payload: $payload");
       var response = await http.post(
         url,
         body: payload,

@@ -1,5 +1,4 @@
 import 'dart:io';
-
 import 'package:dozen_diamond/global/widgets/selected_stock_warning_dialog.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -24,27 +23,29 @@ import '../../kyc/widgets/custom_bottom_sheets.dart';
 import '../../watchlist/stateManagement/watchlist_provider.dart';
 import '../models/selected_stock_model.dart';
 import '../stateManagement/search_provider.dart';
+import '../../socket_manager/stateManagement/web_socket_service_provider.dart';
+import '../../socket_manager/model/ddstock_socket_data_response.dart';
 
 class SearchPageNew extends StatefulWidget {
   final Function updateIndex;
   final bool refreshProviderState;
 
-  const SearchPageNew(
-      {super.key,
-        required this.updateIndex,
-        required this.refreshProviderState});
+  const SearchPageNew({
+    super.key,
+    required this.updateIndex,
+    required this.refreshProviderState
+  });
 
   @override
   State<SearchPageNew> createState() => _SearchPageNewState();
 }
 
 class _SearchPageNewState extends State<SearchPageNew> {
-
   late ThemeProvider themeProvider;
-
   late SearchProvider searchProvider;
   late NavigationProvider _navigationProvider;
   late WatchlistProvider watchlistProvider;
+  late WebSocketServiceProvider webSocketServiceProvider;
   CurrencyConstants? _currencyConstantsProvider;
   late CreateLadderProvider createDetailedLadderProvider;
 
@@ -58,12 +59,8 @@ class _SearchPageNewState extends State<SearchPageNew> {
 
   bool showSearchField = false;
   bool showSelectedStockSection = false;
-  // bool showStockListSection = true;
 
-  /// Global key for the first showcase widget
   final GlobalKey _firstShowcaseWidget = GlobalKey();
-
-  /// Global key for the last showcase widget
   final GlobalKey _lastShowcaseWidget = GlobalKey();
 
   List<Map<String, dynamic>> ladderStepInfoList = [
@@ -72,19 +69,16 @@ class _SearchPageNewState extends State<SearchPageNew> {
       'title': "Select stocks",
       'message': "Choose the stock and mode you want to trade using a ladder strategy."
     },
-
     {
       'icon': Icons.money,
       'title': "Set Price Levels",
       'message': "Define price points where you want to place buy and sell orders and the step size."
     },
-
     {
       'icon': Icons.analytics_outlined,
       'title': "Configure Order Details",
       'message': "Specify the order quantity and execution preferences."
     },
-
     {
       'icon': Icons.check,
       'title': "Review & Confirm",
@@ -98,18 +92,171 @@ class _SearchPageNewState extends State<SearchPageNew> {
 
   bool showSelectedStock = true;
 
+  // FIXED: Method specifically for SelectedTickerModel
+// FIXED: Method that works with your actual stock model
+Future<void> addToWatchlistViaWebSocket(List<dynamic> stocks) async {
+  if (stocks.isEmpty) return;
+  
+  List<int> tickerIds = [];
+  
+  for (var stock in stocks) {
+    Map<dynamic, dynamic> stockMap;
+    
+    if (stock is Map) {
+      stockMap = stock;
+    } else {
+      // Try to convert to JSON map if it has toJson method
+      try {
+        final jsonResult = stock.toJson();
+        if (jsonResult is Map) {
+          stockMap = jsonResult;
+        } else {
+          print("toJson did not return a Map");
+          continue;
+        }
+      } catch (e) {
+        print("Error converting stock to JSON: $e");
+        continue;
+      }
+    }
+    
+    // Try all possible property names based on your actual data
+    int? tickerId = stockMap['ss_ticker_id'] ??      // From your log: ss_ticker_id: 5820
+                    stockMap['tickerId'] ?? 
+                    stockMap['wlTickerId'] ?? 
+                    stockMap['ticker_id'];
+    
+    String? tickerName = stockMap['ss_ticker']?.toString() ??      // From your log: ss_ticker: 7NR
+                         stockMap['ticker']?.toString() ?? 
+                         stockMap['wlTicker']?.toString() ?? 
+                         stockMap['ticker_name']?.toString();
+    
+    String? tickerExchange = stockMap['ss_exchange']?.toString() ??   // From your log: ss_exchange: BSE
+                             stockMap['tickerExchange']?.toString() ?? 
+                             stockMap['wlExchange']?.toString() ?? 
+                             stockMap['ticker_exchange']?.toString();
+    
+    String? issuerName = stockMap['ss_issuer_name']?.toString() ?? 
+                         stockMap['tickerIssuerName']?.toString() ?? 
+                         stockMap['issuerName']?.toString() ?? 
+                         stockMap['ticker_issuer_name']?.toString();
+    
+    if (tickerId == null) {
+      print("Could not find tickerId in stock: $stockMap");
+      print("Available keys: ${stockMap.keys}");
+      continue;
+    }
+    
+    print("Found stock - ID: $tickerId, Name: $tickerName, Exchange: $tickerExchange");
+    
+    // Check if stock already exists in watchlist
+    bool exists = webSocketServiceProvider.ddWatchlistStockList
+        .any((item) => item.tickerId == tickerId);
+    
+    if (!exists) {
+      tickerIds.add(tickerId);
+      
+      // Add to local list immediately for UI update
+      final newStock = DdStock(
+        tickerName: tickerName ?? '',
+        tickerExchange: tickerExchange ?? '',
+        issuerName: issuerName ?? '',
+        tickerId: tickerId,
+      );
+      
+      webSocketServiceProvider.ddWatchlistStockList.add(newStock);
+      print("Added stock to local watchlist: ${newStock.tickerName}");
+    } else {
+      print("Stock already exists in watchlist: $tickerId");
+    }
+  }
+  
+  if (tickerIds.isNotEmpty) {
+    print("Sending WebSocket message to add tickerIds: $tickerIds");
+    
+    // Send WebSocket message to add stocks
+    webSocketServiceProvider.sendMessage({
+      "add": true,
+      "tickerIds": tickerIds,
+    });
+    
+    // Remove from removed list if they were previously removed
+    for (var tickerId in tickerIds) {
+      webSocketServiceProvider.removeFromRemovedList(tickerId);
+    }
+    
+    if (mounted) {
+      Fluttertoast.showToast(
+        msg: '${tickerIds.length} stock(s) added to watchlist',
+        backgroundColor: Colors.green,
+        textColor: Colors.white,
+      );
+    }
+  } else {
+    print("No new stocks to add - all already in watchlist");
+    if (mounted) {
+      Fluttertoast.showToast(
+        msg: 'Stocks already in watchlist',
+        backgroundColor: Colors.orange,
+        textColor: Colors.white,
+      );
+    }
+  }
+}
+
+    // Method to remove stocks from watchlist
+  // Future<void> removeFromWatchlistViaWebSocket(List<SelectedTickerModel> stocks) async {
+  //   if (stocks.isEmpty) return;
+    
+  //   List<int> tickerIds = [];
+    
+  //   for (var stock in stocks) {
+  //     tickerIds.add(stock.tickerId!);
+      
+  //     // Remove from local list immediately for UI update
+  //     webSocketServiceProvider.ddWatchlistStockList
+  //         .removeWhere((item) => item.tickerId == stock.tickerId);
+  //   }
+    
+  //   if (tickerIds.isNotEmpty) {
+  //     // Send WebSocket message to remove stocks
+  //     webSocketServiceProvider.sendMessage({
+  //       "remove": true,
+  //       "tickerIds": tickerIds,
+  //     });
+      
+  //     // Add to removed list
+  //     for (var tickerId in tickerIds) {
+  //       webSocketServiceProvider.addToRemovedList(tickerId);
+  //     }
+      
+  //     if (mounted) {
+  //       Fluttertoast.showToast(
+  //         msg: '${tickerIds.length} stock(s) removed from watchlist',
+  //         backgroundColor: Colors.red,
+  //         textColor: Colors.white,
+  //       );
+  //     }
+  //   }
+  // }
+
   @override
   void initState() {
     super.initState();
-
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
       _currencyConstantsProvider = Provider.of<CurrencyConstants>(context, listen: false);
       createDetailedLadderProvider = Provider.of<CreateLadderProvider>(context, listen: false);
+      
+      // Initialize WebSocket provider
+      webSocketServiceProvider = Provider.of<WebSocketServiceProvider>(context, listen: false);
+      
       prepareScreen();
     });
   }
 
-  Future<void> prepareScreen() async {
+
+
+ Future<void> prepareScreen() async {
     searchProvider = Provider.of<SearchProvider>(context, listen: false);
     searchProvider.fetchWatchList();
     await searchProvider.getSelectedStockList(_currencyConstantsProvider!);
@@ -117,10 +264,9 @@ class _SearchPageNewState extends State<SearchPageNew> {
     searchProvider.getSectorList();
     double screenWidth = screenWidthRecognizer(context);
 
-    _navigationProvider =
-        Provider.of<NavigationProvider>(context, listen: false);
+    _navigationProvider = Provider.of<NavigationProvider>(context, listen: false);
 
-    print("iside prepraScreen");
+    print("inside prepareScreen");
     print(createDetailedLadderProvider.showLadderIntroToolTip);
     if(createDetailedLadderProvider.showLadderIntroToolTip) {
       createDetailedLadderProvider.showLadderIntroToolTip = false;
@@ -128,41 +274,21 @@ class _SearchPageNewState extends State<SearchPageNew> {
         print("before calling tooltips");
         ShowCaseWidget.of(_key.currentContext!).startShowCase([_one, _two, _three, _four, _five]);
       });
-
     }
 
-    // final value = (await SharedPreferenceManager.getIsFirstTimeOnLadderPage()) ?? true;
-    final value = false; // (await SharedPreferenceManager.getIsFirstTimeOnLadderPage()) ?? true;
-
+    final value = false;
+    
     if(value == false) {
       setState(() {
         searchProvider.showStockListSection = true;
         showSelectedStockSection = true;
       });
-
-      // Future.delayed(Duration.zero).then((value) async {
-      //   // await showDialog(
-      //   //     context: context,
-      //   //     builder: (ctx) => filterDialogbox(context),
-      //   //     barrierDismissible: false);
-      //   CustomBottomSheets.showBottomSheetWithHeightWithoutClose(
-      //       buildFilterBottomSheet(context, screenWidth),
-      //       context,
-      //       height: 350
-      //   );
-      // });
     } else {
       setState(() {
         searchProvider.showStockListSection = false;
         showSelectedStockSection = false;
       });
     }
-    // Future.delayed(Duration.zero).then((value) async {
-    //   await showDialog(
-    //       context: context,
-    //       builder: (ctx) => filterDialogbox(context),
-    //       barrierDismissible: false);
-    // });
   }
 
   @override
@@ -170,183 +296,124 @@ class _SearchPageNewState extends State<SearchPageNew> {
     super.didChangeDependencies();
   }
 
-  @override
+ @override
   Widget build(BuildContext context) {
-
     double screenWidth = screenWidthRecognizer(context);
     searchProvider = Provider.of<SearchProvider>(context, listen: true);
     watchlistProvider = Provider.of<WatchlistProvider>(context, listen: true);
+    
+    // IMPORTANT: Listen to WebSocket provider for real-time updates
+    webSocketServiceProvider = Provider.of<WebSocketServiceProvider>(context, listen: true);
+    
     createDetailedLadderProvider = Provider.of<CreateLadderProvider>(context, listen: true);
     createDetailedLadderProvider.ladderCreationScreen1.clear();
     createDetailedLadderProvider.ladderCreationScreen2.clear();
     createDetailedLadderProvider.ladderCreationScreen3.clear();
-    _navigationProvider =
-        Provider.of<NavigationProvider>(context, listen: true);
+    _navigationProvider = Provider.of<NavigationProvider>(context, listen: true);
     themeProvider = Provider.of<ThemeProvider>(context, listen: true);
 
     return SafeArea(
-      bottom: (kIsWeb)?true:(Platform.isIOS)?false:true,
+      bottom: (kIsWeb) ? true : (Platform.isIOS) ? false : true,
       child: Center(
         child: Stack(
           children: [
             Center(
               child: Container(
-                      color: (themeProvider.defaultTheme)
-                        ? Color(0XFFF5F5F5)
-                        : Colors.transparent,
-                    width: screenWidth,
-                    child: ShowCaseWidget(
-                        hideFloatingActionWidgetForShowcase: [_lastShowcaseWidget],
-                        // globalFloatingActionWidget: (showcaseContext) => FloatingActionWidget(
-                        //   left: 16,
-                        //   bottom: 16,
-                        //   child: Padding(
-                        //     padding: const EdgeInsets.all(16.0),
-                        //     child: ElevatedButton(
-                        //       onPressed: ShowCaseWidget.of(showcaseContext).dismiss,
-                        //       style: ElevatedButton.styleFrom(
-                        //         backgroundColor: const Color(0xffEE5366),
-                        //       ),
-                        //       child: const Text(
-                        //         'Skip',
-                        //         style: TextStyle(
-                        //           color: Colors.white,
-                        //           fontSize: 15,
-                        //         ),
-                        //       ),
-                        //     ),
-                        //   ),
-                        // ),=
-                        onStart: (index, key) {
-                          print('onStart: $index, $key');
-
-                        },
-
-                        onComplete: (index, key) {
-                          print('onComplete: $index, $key');
-                          if(index == 1) {
-                            setState(() {
-                              showSearchField = true;
-                            });
-                          } else {
-                            setState(() {
-                              showSearchField = false;
-                            });
-
-                          }
-
-                          if(index == 2) {
-                            setState(() {
-                              showSelectedStockSection = true;
-                            });
-                          } else {
-                            setState(() {
-                              showSelectedStockSection = false;
-                            });
-
-                          }
-
-                          if (index == 5) {
-                            SystemChrome.setSystemUIOverlayStyle(
-                              SystemUiOverlayStyle.light.copyWith(
-                                statusBarIconBrightness: Brightness.dark,
-                                statusBarColor: Colors.white,
-                              ),
-                            );
-                          }
-                        },
-                        blurValue: 1,
-                        autoPlayDelay: const Duration(seconds: 3),
-                        globalTooltipActionConfig: const TooltipActionConfig(
-                          position: TooltipActionPosition.inside,
-                          alignment: MainAxisAlignment.spaceBetween,
-                          actionGap: 20,
+                color: (themeProvider.defaultTheme)
+                    ? Color(0XFFF5F5F5)
+                    : Colors.transparent,
+                width: screenWidth,
+                child: ShowCaseWidget(
+                  hideFloatingActionWidgetForShowcase: [_lastShowcaseWidget],
+                  onStart: (index, key) {
+                    print('onStart: $index, $key');
+                  },
+                  onComplete: (index, key) {
+                    print('onComplete: $index, $key');
+                    if(index == 1) {
+                      setState(() {
+                        showSearchField = true;
+                      });
+                    } else {
+                      setState(() {
+                        showSearchField = false;
+                      });
+                    }
+                    if(index == 2) {
+                      setState(() {
+                        showSelectedStockSection = true;
+                      });
+                    } else {
+                      setState(() {
+                        showSelectedStockSection = false;
+                      });
+                    }
+                    if (index == 5) {
+                      SystemChrome.setSystemUIOverlayStyle(
+                        SystemUiOverlayStyle.light.copyWith(
+                          statusBarIconBrightness: Brightness.dark,
+                          statusBarColor: Colors.white,
                         ),
-                        // globalTooltipActions: [
-                        //   // Here we don't need previous action for the first showcase widget
-                        //   // so we hide this action for the first showcase widget
-                        //   TooltipActionButton(
-                        //     type: TooltipDefaultActionType.previous,
-                        //     textStyle: const TextStyle(
-                        //       color: Colors.white,
-                        //     ),
-                        //     hideActionWidgetForShowcase: [_firstShowcaseWidget],
-                        //   ),
-                        //   // Here we don't need next action for the last showcase widget so we
-                        //   // hide this action for the last showcase widget
-                        //   TooltipActionButton(
-                        //     type: TooltipDefaultActionType.next,
-                        //     textStyle: const TextStyle(
-                        //       color: Colors.white,
-                        //     ),
-                        //     hideActionWidgetForShowcase: [_lastShowcaseWidget],
-                        //   ),
-                        // ],
-                      builder: (context) {
-                        return Scaffold(
-                          // drawer: NavigationDrawerWidget(updateIndex: widget.updateIndex),
-                            drawer: NavDrawerNew(updateIndex: widget.updateIndex),
-                          key: _key,
-                          // backgroundColor: Colors.red,
-                          backgroundColor: (themeProvider.defaultTheme)
-                              ? Color(0xfff0f0f0) //Color(0XFFF5F5F5)
-                              : Color(0xFF15181F),
-                          body: Stack(
+                      );
+                    }
+                  },
+                  blurValue: 1,
+                  autoPlayDelay: const Duration(seconds: 3),
+                  globalTooltipActionConfig: const TooltipActionConfig(
+                    position: TooltipActionPosition.inside,
+                    alignment: MainAxisAlignment.spaceBetween,
+                    actionGap: 20,
+                  ),
+                  builder: (context) {
+                    return Scaffold(
+                      drawer: NavDrawerNew(updateIndex: widget.updateIndex),
+                      key: _key,
+                      backgroundColor: (themeProvider.defaultTheme)
+                          ? Color(0xfff0f0f0)
+                          : Color(0xFF15181F),
+                      body: Stack(
+                        children: [
+                          Column(
                             children: [
-                              Column(
-                                children: [
-                                  SizedBox(
-                                    height: 45,
-                                  ),
-
-                                  SizedBox(
-                                    height: 10,
-                                  ),
-
-
-                                  (showSearchField)
-                                      ?Showcase(
+                              SizedBox(height: 45),
+                              SizedBox(height: 10),
+                              (showSearchField)
+                                  ? Showcase(
                                       titleAlignment: Alignment.topLeft,
                                       descriptionAlignment: Alignment.bottomLeft,
                                       titleTextStyle: GoogleFonts.poppins(
-                                          fontWeight: FontWeight.w600,
-                                          fontSize: 14,
-                                          color: Color(0xff484848)
+                                        fontWeight: FontWeight.w600,
+                                        fontSize: 14,
+                                        color: Color(0xff484848)
                                       ),
                                       descTextStyle: GoogleFonts.poppins(
-                                          fontWeight: FontWeight.w400,
-                                          fontSize: 14,
-                                          color: Color(0xff333333)
+                                        fontWeight: FontWeight.w400,
+                                        fontSize: 14,
+                                        color: Color(0xff333333)
                                       ),
                                       key: _three,
                                       title: 'Search for stocks',
                                       description: "Type the name of the stock you want. You can also add multiple stocks at a time.",
                                       child: buildSearchField(context, screenWidth)
-                                  ):buildTopSection(context, screenWidth),
-
-                                  SizedBox(
-                                    height: 15,
-                                  ),
-
-                                  (searchProvider.showStockListSection)
-                                      ?Expanded(child: buildStockListSection(context, screenWidth))
-                                      :SingleChildScrollView(child: buildLadderStepInfoSection(context, screenWidth)),
-
-                                ],
-                              ),
-
-                              CustomHomeAppBarWithProviderNew(
-                                  backButton: false, leadingAction: _triggerDrawer),
+                                  ) : buildTopSection(context, screenWidth),
+                              SizedBox(height: 15),
+                              (searchProvider.showStockListSection)
+                                  ? Expanded(child: buildStockListSection(context, screenWidth))
+                                  : SingleChildScrollView(child: buildLadderStepInfoSection(context, screenWidth)),
                             ],
                           ),
-
-                          bottomNavigationBar: (showSelectedStockSection)
-                              ?buildBottomSheetSection(context, screenWidth):Container(
-                            height: 0,
-                          )
-                        );
-                      }
-                    )
+                          CustomHomeAppBarWithProviderNew(
+                            backButton: false, 
+                            leadingAction: _triggerDrawer
+                          ),
+                        ],
+                      ),
+                      bottomNavigationBar: (showSelectedStockSection)
+                          ? buildBottomSheetSection(context, screenWidth)
+                          : Container(height: 0),
+                    );
+                  }
+                ),
               ),
             ),
           ],
@@ -354,6 +421,7 @@ class _SearchPageNewState extends State<SearchPageNew> {
       ),
     );
   }
+
 
   Widget buildTopSection(BuildContext context, double screenWidth) {
     return Padding(
@@ -616,59 +684,6 @@ class _SearchPageNewState extends State<SearchPageNew> {
 
             Row(
               children: [
-
-                // (searchProvider
-                //     .tickerList[index].isAddedToWatchList)
-                //     ? InkWell(
-                //   onTap: () async {
-                //     searchProvider.updateTickerWatchlist(index, false, searchProvider.tickerList[index].wlId);
-                //
-                //     await watchlistProvider.removeWatchList(searchProvider
-                //         .tickerList[index].wlId, searchProvider
-                //         .tickerList[index].tickerId.toString());
-                //     await searchProvider.fetchWatchList();
-                //
-                //     searchProvider.tickerList = await searchProvider.determineSelectedAndUnselectedTickers(
-                //         searchProvider.tickerList, searchProvider.selectedStockList.data ?? []);
-                //
-                //   },
-                //       child: Icon(
-                //                         // Icons.add_circle_outline,
-                //                         // Icons.check_circle_outline,
-                //                         Icons.bookmark,
-                //                         size: 22,
-                //                         color: (themeProvider.defaultTheme)
-                //                             ?Color(0xff808083):Color(0xfff0f0f0), //Color(0xff1a94f2),
-                //                       ),
-                //     ) : InkWell(
-                //   onTap: () async {
-                //
-                //     searchProvider.updateTickerWatchlist(index, true, searchProvider.tickerList[index].wlId);
-                //     List<SelectedTickerModel>? data = [
-                //       SelectedTickerModel(
-                //         ssTickerId: searchProvider
-                //             .tickerList[index].tickerId,
-                //       )
-                //     ];
-                //     await watchlistProvider.addToWatchlist(data);
-                //     await searchProvider.fetchWatchList();
-                //     searchProvider.tickerList = await searchProvider.determineSelectedAndUnselectedTickers(
-                //         searchProvider.tickerList, searchProvider.selectedStockList.data ?? []);
-                //   },
-                //   child: Icon(
-                //     // Icons.add_circle_outline,
-                //     // Icons.add_circle_outline,
-                //     Icons.bookmark_border,
-                //     size: 22,
-                //     color: (themeProvider.defaultTheme)
-                //         ?Colors.black:Color(0xfff0f0f0), // Color(0xff808083), //Color(0xff1a94f2),
-                //   ),
-                // ),
-
-                // SizedBox(
-                //   width: 10,
-                // ),
-
                 searchProvider
                     .tickerList[index].isSelected
                     ?Icon(
@@ -702,18 +717,18 @@ class _SearchPageNewState extends State<SearchPageNew> {
     );
   }
 
-  Widget buildBottomSheetSection(BuildContext context , double screenWidth) {
+  // UPDATED: Bottom sheet with corrected Add to Watchlist button
+  Widget buildBottomSheetSection(BuildContext context, double screenWidth) {
     return Container(
-        decoration: BoxDecoration(
-          color: (themeProvider.defaultTheme)
-              ?Color(0xfff5f5f5)
-              :Color(0xff454545),
-          borderRadius: BorderRadius.only(
-            topLeft: Radius.circular(12), // Apply radius only to top-left
-              topRight: Radius.circular(12),
-          ),
+      decoration: BoxDecoration(
+        color: (themeProvider.defaultTheme)
+            ? Color(0xfff5f5f5)
+            : Color(0xff454545),
+        borderRadius: BorderRadius.only(
+          topLeft: Radius.circular(12),
+          topRight: Radius.circular(12),
         ),
-
+      ),
       child: Padding(
         padding: const EdgeInsets.only(left: 16, right: 16, top: 12, bottom: 4.0),
         child: Column(
@@ -723,100 +738,71 @@ class _SearchPageNewState extends State<SearchPageNew> {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                (searchProvider.selectedStockList.data == null || searchProvider.selectedStockList.data!.isEmpty)?Text(
-                  "No stocks selected",
-                  style: GoogleFonts.poppins(
-                    fontWeight: FontWeight.w400,
-                    fontSize: 14,
-                    color: (themeProvider.defaultTheme)
-                        ?Colors.black
-                        :Color(0xfff0f0f0),
-                  ),
-                ):InkWell(
-                  onTap: () {
-                    setState(() {
-                      showSelectedStock = !showSelectedStock;
-                    });
-
-                  },
-                  child: Row(
-                    children: [
-                      Text(
-                        "Selected stocks ",
+                (searchProvider.selectedStockList.data == null || searchProvider.selectedStockList.data!.isEmpty)
+                    ? Text(
+                        "No stocks selected",
                         style: GoogleFonts.poppins(
                           fontWeight: FontWeight.w400,
                           fontSize: 14,
                           color: (themeProvider.defaultTheme)
-                              ?Colors.black
-                              :Color(0xfff0f0f0),
+                              ? Colors.black
+                              : Color(0xfff0f0f0),
                         ),
-                      ),
-
-                      Text(
-                        "(${searchProvider.selectedStockList.data!.length}) ",
-                        style: GoogleFonts.poppins(
-                          fontWeight: FontWeight.w700,
-                          fontSize: 14,
-                          color: (themeProvider.defaultTheme)
-                              ?Colors.black
-                              :Color(0xfff0f0f0),
-                        ),
-                      ),
-
-                      Icon(
-                        (showSelectedStock == true)
-                            ?Icons.keyboard_arrow_up_outlined
-                            :Icons.keyboard_arrow_down_outlined,
-                        size: 24,
-                        color: (themeProvider.defaultTheme)
-                            ?Colors.black
-                            :Color(0xfff0f0f0),
                       )
-                    ],
-                  ),
-                ),
-
+                    : InkWell(
+                        onTap: () {
+                          setState(() {
+                            showSelectedStock = !showSelectedStock;
+                          });
+                        },
+                        child: Row(
+                          children: [
+                            Text(
+                              "Selected stocks ",
+                              style: GoogleFonts.poppins(
+                                fontWeight: FontWeight.w400,
+                                fontSize: 14,
+                                color: (themeProvider.defaultTheme)
+                                    ? Colors.black
+                                    : Color(0xfff0f0f0),
+                              ),
+                            ),
+                            Text(
+                              "(${searchProvider.selectedStockList.data!.length}) ",
+                              style: GoogleFonts.poppins(
+                                fontWeight: FontWeight.w700,
+                                fontSize: 14,
+                                color: (themeProvider.defaultTheme)
+                                    ? Colors.black
+                                    : Color(0xfff0f0f0),
+                              ),
+                            ),
+                            Icon(
+                              (showSelectedStock == true)
+                                  ? Icons.keyboard_arrow_up_outlined
+                                  : Icons.keyboard_arrow_down_outlined,
+                              size: 24,
+                              color: (themeProvider.defaultTheme)
+                                  ? Colors.black
+                                  : Color(0xfff0f0f0),
+                            )
+                          ],
+                        ),
+                      ),
                 Column(
                   children: [
-                    // Container(
-                    //   margin: EdgeInsets.only(right: 10, top: 10, bottom: 5),
-                    //   height: 27,
-                    //   alignment: Alignment.centerLeft,
-                    //   child: ElevatedButton(
-                    //       onPressed: () async {
-                    //         watchlistProvider
-                    //             .addToWatchlist(searchProvider.selectedStockList.data!);
-                    //       },
-                    //       style: OutlinedButton.styleFrom(
-                    //         backgroundColor: Colors.green,
-                    //         // shape: RoundedRectangleBorder(
-                    //         //   borderRadius: BorderRadius.circular(5),
-                    //         // ),
-                    //         // side: const BorderSide(
-                    //         //   color: Color(0xFF0099CC),
-                    //         // ),
-                    //       ),
-                    //       // style: ElevatedButton.styleFrom().copyWith(
-                    //       //   backgroundColor: MaterialStateProperty<Color?>?.green,
-                    //       // ),
-                    //       child: Text('Add to Watchlist',
-                    //           style: TextStyle(color: Colors.white)
-                    //         // style: TextStyle(fontSize: 17)
-                    //       )),
-                    // ),
-
                     Showcase(
                       titleAlignment: Alignment.topLeft,
                       descriptionAlignment: Alignment.bottomLeft,
                       titleTextStyle: GoogleFonts.poppins(
-                          fontWeight: FontWeight.w600,
-                          fontSize: 14,
-                          color: Color(0xff484848)
+                        fontWeight: FontWeight.w600,
+                        fontSize: 14,
+                        color: Color(0xff484848)
                       ),
                       descTextStyle: GoogleFonts.poppins(
-                          fontWeight: FontWeight.w400,
-                          fontSize: 14,
-                          color: Color(0xff333333)
+                        fontWeight: FontWeight.w400,
+                        fontSize: 14,
+                        color: Color(0xff333333)
                       ),
                       key: _four,
                       title: 'Assign Cash',
@@ -827,135 +813,131 @@ class _SearchPageNewState extends State<SearchPageNew> {
                         margin: EdgeInsets.zero,
                         borderRadius: 12,
                         backgroundColor: (searchProvider.selectedStockList.data == null || searchProvider.selectedStockList.data!.isEmpty)
-                            ?Color(0xffa8a8a8):(themeProvider.defaultTheme)
-                            ?Colors.black
-                            :Color(0xfff0f0f0),
+                            ? Color(0xffa8a8a8)
+                            : (themeProvider.defaultTheme)
+                                ? Colors.black
+                                : Color(0xfff0f0f0),
                         onTap: () {
-
-                          if(searchProvider.selectedStockList.data == null || searchProvider.selectedStockList.data!.isEmpty){
-
+                          if (searchProvider.selectedStockList.data == null || searchProvider.selectedStockList.data!.isEmpty) {
                             Fluttertoast.showToast(
-                                msg: 'Select Ticker');
-
+                              msg: 'Select Ticker',
+                              backgroundColor: Colors.red,
+                            );
                           } else {
-
                             if (!searchProvider.isBtnClicked) {
                               createDetailedLadderProvider.cashAllocatedControllerList.clear();
-                              watchlistProvider
-                                  .addToWatchlist(searchProvider.selectedStockList.data!, context);
+                              watchlistProvider.addToWatchlist(searchProvider.selectedStockList.data!, context);
                               searchProvider.isBtnClicked = true;
                               searchProvider.searchBarFocus.unfocus();
                               searchProvider.textEditingController.clear();
                               searchProvider.isBtnClicked = false;
-                              _navigationProvider.previousSelectedIndex =
-                                  _navigationProvider.selectedIndex;
-
+                              _navigationProvider.previousSelectedIndex = _navigationProvider.selectedIndex;
                               _navigationProvider.selectedIndex = 4;
                               createDetailedLadderProvider.stockRecommendationParameters(searchProvider.selectedStockList.data!);
-
-                              print(
-                                  "the next button in search ${_navigationProvider.selectedIndex}");
+                              print("the next button in search ${_navigationProvider.selectedIndex}");
                             }
-
                           }
                         },
                         child: Padding(
                           padding: const EdgeInsets.only(left: 12, right: 12, top: 8, bottom: 8.0),
                           child: Text(
-                              "Assign cash",
-                              style: GoogleFonts.poppins(
-                                fontSize: 14.5,
-                                fontWeight: FontWeight.w500,
-                                color: (searchProvider.selectedStockList.data == null || searchProvider.selectedStockList.data!.isEmpty)
-                                    ?Color(0xfff0f0f0)
-                                    :(themeProvider.defaultTheme)
-                                    ?Color(0xfff0f0f0)
-                                    :Color(0xff000000),
-                              )
-                          ),
-                        ),
-                      ),
-                    ),
-
-                    SizedBox(
-                      height: 5,
-                    ),
-
-                    CustomContainer(
-                      padding: 0,
-                      paddingEdge: EdgeInsets.zero,
-                      margin: EdgeInsets.zero,
-                      borderRadius: 12,
-                      backgroundColor: (searchProvider.selectedStockList.data == null || searchProvider.selectedStockList.data!.isEmpty)
-                          ?Color(0xffa8a8a8):(themeProvider.defaultTheme)
-                          ?Colors.black
-                          :Color(0xfff0f0f0),
-                      onTap: () {
-
-                        watchlistProvider
-                            .addToWatchlist(searchProvider.selectedStockList.data!, context);
-
-
-                      },
-                      child: Padding(
-                        padding: const EdgeInsets.only(left: 12, right: 12, top: 8, bottom: 8.0),
-                        child: Text(
-                            "Add To Watchlist",
+                            "Assign cash",
                             style: GoogleFonts.poppins(
                               fontSize: 14.5,
                               fontWeight: FontWeight.w500,
                               color: (searchProvider.selectedStockList.data == null || searchProvider.selectedStockList.data!.isEmpty)
-                                  ?Color(0xfff0f0f0)
-                                  :(themeProvider.defaultTheme)
-                                  ?Color(0xfff0f0f0)
-                                  :Color(0xff000000),
-                            )
+                                  ? Color(0xfff0f0f0)
+                                  : (themeProvider.defaultTheme)
+                                      ? Color(0xfff0f0f0)
+                                      : Color(0xff000000),
+                            ),
+                          ),
                         ),
                       ),
                     ),
+                    SizedBox(height: 5),
+                    // FIXED: This is the corrected Add To Watchlist button for SelectedTickerModel
+                   // In buildBottomSheetSection, update the Add To Watchlist button:
+CustomContainer(
+  padding: 0,
+  paddingEdge: EdgeInsets.zero,
+  margin: EdgeInsets.zero,
+  borderRadius: 12,
+  backgroundColor: (searchProvider.selectedStockList.data == null || searchProvider.selectedStockList.data!.isEmpty)
+      ? Color(0xffa8a8a8)
+      : (themeProvider.defaultTheme)
+          ? Colors.black
+          : Color(0xfff0f0f0),
+  onTap: () async {
+    if (searchProvider.selectedStockList.data == null || searchProvider.selectedStockList.data!.isEmpty) {
+      if (mounted) {
+        Fluttertoast.showToast(
+          msg: 'Please select stocks first',
+          backgroundColor: Colors.red,
+        );
+      }
+      return;
+    }
+    
+    // Use WebSocket-based add to watchlist
+    await addToWatchlistViaWebSocket(searchProvider.selectedStockList.data!);
+    
+    // Don't show SnackBar here - the toast message from the method is enough
+    // The method already shows Fluttertoast messages
+  },
+  child: Padding(
+    padding: const EdgeInsets.only(left: 12, right: 12, top: 8, bottom: 8.0),
+    child: Text(
+      "Add To Watchlist",
+      style: GoogleFonts.poppins(
+        fontSize: 14.5,
+        fontWeight: FontWeight.w500,
+        color: (searchProvider.selectedStockList.data == null || searchProvider.selectedStockList.data!.isEmpty)
+            ? Color(0xfff0f0f0)
+            : (themeProvider.defaultTheme)
+                ? Color(0xfff0f0f0)
+                : Color(0xff000000),
+      ),
+    ),
+  ),
+),
                   ],
                 )
-
-
               ],
             ),
-
             (searchProvider.selectedStockList.data == null || searchProvider.selectedStockList.data!.isEmpty)
-                ?Container():(showSelectedStock == false)?Container():SizedBox(
-              height: 10,
-            ),
-
+                ? Container()
+                : (showSelectedStock == false)
+                    ? Container()
+                    : SizedBox(height: 10),
             (searchProvider.selectedStockList.data == null || searchProvider.selectedStockList.data!.isEmpty)
-                ?Container()
-                :(showSelectedStock == false)
-                ?Container():Container(
-              constraints: BoxConstraints(
-                  maxHeight: MediaQuery.of(context).size.height * 0.11),
-              width: MediaQuery.of(context).size.width * 0.97,
-              child: RawScrollbar(
-                thumbColor: Colors.blue,
-                controller: searchProvider.selectedStockScrollController,
-                radius: Radius.circular(10),
-
-                thumbVisibility: true,
-                child: SingleChildScrollView(
-                  controller: searchProvider.selectedStockScrollController,
-                  padding: EdgeInsets.zero,
-                  scrollDirection: Axis.vertical,
-                  child: Wrap(children: _selectedStockTag()),
-                ),
-              ),
-            ),
-
+                ? Container()
+                : (showSelectedStock == false)
+                    ? Container()
+                    : Container(
+                        constraints: BoxConstraints(
+                          maxHeight: MediaQuery.of(context).size.height * 0.11
+                        ),
+                        width: MediaQuery.of(context).size.width * 0.97,
+                        child: RawScrollbar(
+                          thumbColor: Colors.blue,
+                          controller: searchProvider.selectedStockScrollController,
+                          radius: Radius.circular(10),
+                          thumbVisibility: true,
+                          child: SingleChildScrollView(
+                            controller: searchProvider.selectedStockScrollController,
+                            padding: EdgeInsets.zero,
+                            scrollDirection: Axis.vertical,
+                            child: Wrap(children: _selectedStockTag()),
+                          ),
+                        ),
+                      ),
             (searchProvider.selectedStockList.data == null || searchProvider.selectedStockList.data!.isEmpty)
-                ?Container():SizedBox(
-              height: 10,
-            ),
-
-
+                ? Container()
+                : SizedBox(height: 10),
           ],
         ),
-      )
+      ),
     );
   }
 
@@ -1677,31 +1659,7 @@ class _SearchPageNewState extends State<SearchPageNew> {
                   ),
                 ),
               ),
-              // Container(
-              //   margin: const EdgeInsets.only(left: 40, bottom: 0),
-              //   child: InkWell(
-              //     child: const Icon(
-              //       Icons.keyboard_double_arrow_left_outlined,
-              //       textDirection: TextDirection.rtl,
-              //       color: Colors.blue,
-              //       size: 40,
-              //     ),
-              //     onTap: () async {
-              //       if (searchProvider.currentPage > 0) {
-              //         searchProvider.isLoading = true;
-              //
-              //         searchProvider.currentPage -= 1;
-              //
-              //         searchProvider.searchingStockByNameNew(
-              //             searchProvider.currentPage,
-              //             query: searchProvider.textEditingController.text);
-              //       }
-              //     },
-              //   ),
-              // )
-            // else
-            //   const SizedBox(),
-
+             
             Padding(
               padding: const EdgeInsets.only(top: 8, bottom: 8, left: 12),
               child: CustomContainer(
@@ -1762,24 +1720,7 @@ class _SearchPageNewState extends State<SearchPageNew> {
                   ),
                 ),
               )
-              // Container(
-              //   margin: const EdgeInsets.only(right: 40, bottom: 0),
-              //   child: InkWell(
-              //     child: const Icon(
-              //       Icons.keyboard_double_arrow_right_outlined,
-              //       color: Colors.blue,
-              //       size: 40,
-              //     ),
-              //     onTap: () async {
-              //       searchProvider.isLoading = true;
-              //       searchProvider.currentPage += 1;
-              //
-              //       searchProvider.searchingStockByNameNew(
-              //           searchProvider.currentPage,
-              //           query: searchProvider.textEditingController.text);
-              //     },
-              //   ),
-              // )
+            
             else
               const SizedBox()
           ],
@@ -1934,20 +1875,6 @@ class _SearchPageNewState extends State<SearchPageNew> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: [
-                  // InkWell(
-                  //   onTap: () {
-                  //     Navigator.pop(context);
-                  //   },
-                  //   child: Text(
-                  //     "Close",
-                  //     style: GoogleFonts.poppins(
-                  //         fontWeight: FontWeight.w500,
-                  //         fontSize: 16.5,
-                  //         color: Color(0xfff0f0f0)
-                  //     ),
-                  //   ),
-                  // ),
-                  //
                   SizedBox(
                     width: 18,
                   ),

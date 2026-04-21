@@ -43,7 +43,8 @@ double floorToSpecifiedPrecision({required double value, int precision = 2}) {
 }
 
 Future<void> showCustomAlertDialogFromHelper(BuildContext context, String msg,
-    [Function? action]) async {
+    [Function? action,
+  bool showCancelButton = true]) async {
   await showDialog(
     barrierDismissible: false,
     context: context,
@@ -100,19 +101,18 @@ Future<void> showCustomAlertDialogFromHelper(BuildContext context, String msg,
                       ),
                     ),
                   ),
-                  Expanded(
-                    child: TextButton(
-                      onPressed: () {
-                        Navigator.of(context).pop();
-                      },
-                      child: const Text(
-                        "Cancel",
-                        style: TextStyle(
-                          color: Colors.white,
+                  if (showCancelButton)
+                    Expanded(
+                      child: TextButton(
+                        onPressed: () {
+                          Navigator.of(context).pop();
+                        },
+                        child: const Text(
+                          "Cancel",
+                          style: TextStyle(color: Colors.white),
                         ),
                       ),
                     ),
-                  ),
                 ],
               )
             ],

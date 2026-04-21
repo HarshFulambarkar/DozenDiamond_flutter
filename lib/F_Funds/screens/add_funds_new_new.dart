@@ -1304,7 +1304,7 @@ class _AddFundsNewNewState extends State<AddFundsNewNew> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            "NAV",
+                            "xxxxxx",
                             style: GoogleFonts.poppins(
                               fontWeight: FontWeight.w400,
                               fontSize: 12,

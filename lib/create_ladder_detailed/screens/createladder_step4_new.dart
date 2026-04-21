@@ -174,6 +174,40 @@ class _CreateLadder4NewState extends State<CreateLadder4New> {
                               SizedBox(
                                 height: 10,
                               ),
+                              if (_stateProvider!.numberOfStepsBelow == 0)
+  Padding(
+    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+    child: Container(
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: Colors.red.withOpacity(0.1),
+        borderRadius: BorderRadius.circular(8),
+        border: Border.all(color: Colors.red.withOpacity(0.3)),
+      ),
+      child: Row(
+        children: [
+          Icon(
+            Icons.warning_amber_rounded,
+            color: Colors.orange,
+            size: 20,
+          ),
+          SizedBox(width: 8),
+          Expanded(
+            child: Text(
+              "Warning: Steps Below is 0. Please increase the Allocated cash in previous step.",
+              style: GoogleFonts.poppins(
+                fontSize: 12,
+                color: Colors.orange,
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+          ),
+        ],
+      ),
+    ),
+  ),
+
+SizedBox(height: 10),
 
                               buildConfigurationsSection(context, screenWidth),
 
@@ -1792,6 +1826,7 @@ class _CreateLadder4NewState extends State<CreateLadder4New> {
   }
 
   Widget buildCreateLadderStep4ButtonSection(BuildContext context, double screenWidth) {
+
     return Container(
       decoration: BoxDecoration(
         color: (themeProvider.defaultTheme)?Color(0xfff5f5f5):Color(0xff454545),
@@ -1824,11 +1859,22 @@ class _CreateLadder4NewState extends State<CreateLadder4New> {
                   print(_stateProvider!.numberOfStepsAboveController.text);
                   print(_stateProvider!.minStepAbove);
                   print(_stateProvider!.maxStepAbove);
-
                   print(_stateProvider!.calculatedStepSize);
                   print(_stateProvider!.minStepSize);
                   print(_stateProvider!.maxStepSize);
+                  if(_stateProvider!.numberOfStepsBelow == 0){
+                    showDialog(
+                      context: context,
+                      barrierDismissible: false,
+                      builder: (context) {
+                        return warningMessageDialog(
+                            "Please increase the Cash allocated",
+                            context);
+                      },
+                    );
+                    return;
 
+                  }
                   if(((double.tryParse(_stateProvider!.numberOfStepsAboveController.text) ?? 0) < (double.tryParse(_stateProvider!.minStepAbove.toStringAsFixed(2)) ?? 0)) || ((double.tryParse(_stateProvider!.numberOfStepsAboveController.text) ?? 0) > (double.tryParse(_stateProvider!.maxStepAbove.toStringAsFixed(2)) ?? 0))) {
 
                     showDialog(

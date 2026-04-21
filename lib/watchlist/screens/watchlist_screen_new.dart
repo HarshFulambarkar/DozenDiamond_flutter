@@ -154,27 +154,29 @@ class _WatchlistScreenNewState extends State<WatchlistScreenNew>
       print(
         'Search query: ${Provider.of<WatchlistProvider>(context, listen: false).searchedStockNameTextController.text}',
       );
+      final searchText = Provider.of<WatchlistProvider>(context, listen: false).searchedStockNameTextController.text;
       if (Provider.of<WatchlistProvider>(
         context,
         listen: false,
       ).searchedStockNameTextController.text.length >
           1) {
-        if (oldStockName !=
-            Provider.of<WatchlistProvider>(
-              context,
-              listen: false,
-            ).searchedStockNameTextController.text) {
-          oldStockName = Provider.of<WatchlistProvider>(
-            context,
-            listen: false,
-          ).searchedStockNameTextController.text;
-          watchlistProvider.searchStock(
-            Provider.of<WatchlistProvider>(
-              context,
-              listen: false,
-            ).searchedStockNameTextController.text,
-          );
-        }
+        // if (oldStockName !=
+        //     Provider.of<WatchlistProvider>(
+        //       context,
+        //       listen: false,
+        //     ).searchedStockNameTextController.text) {
+        //   oldStockName = Provider.of<WatchlistProvider>(
+        //     context,
+        //     listen: false,
+        //   ).searchedStockNameTextController.text;
+        //   watchlistProvider.searchStock(
+        //     Provider.of<WatchlistProvider>(
+        //       context,
+        //       listen: false,
+        //     ).searchedStockNameTextController.text,
+        //   );
+        // }
+        watchlistProvider.searchStock(searchText);
       } else {
         watchlistProvider.searchedStockList.clear();
         watchlistProvider.isSearchingStock = false;
@@ -1519,6 +1521,7 @@ Widget buildStockCardFromWebSocket(
 
                           webSocketServiceProvider.addToRemovedList(tickerId);
                         } else {
+                          print("added");
                           // ADD
                           webSocketServiceProvider.ddWatchlistStockList.add(
                             DdStock(
@@ -1559,272 +1562,6 @@ Widget buildStockCardFromWebSocket(
                 ),
               ],
             ),
-
-            //  Row(
-            //     children: [
-            //       (webSocketServiceProvider.ddWatchlistStockList.any(
-            //                 (item) =>
-            //                     item.tickerId ==
-            //                     watchlistProvider
-            //                         .searchedStockList[index]
-            //                         .tickerId,
-            //               ) ||
-            //               watchlistProvider.searchedStockList[index].isSelected!)
-            //           // (watchlistProvider.watchList.any((item) =>
-            //           //             item.wlTickerId ==
-            //           //             watchlistProvider
-            //           //                 .searchedStockList[index].tickerId) ||
-            //           //         watchlistProvider.searchedStockList[index].isSelected!)
-            //           ? InkWell(
-            //               onTap: () async {
-            //                 print("tap");
-            //                 print(watchlistProvider.isButtonClicked);
-            //                 if (!watchlistProvider.isButtonClicked) {
-            //                   watchlistProvider.isButtonClicked = true;
-            //                   // await searchProvider
-            //                   //     .updateSelectedStockListNew(
-            //                   //     index, context);
-
-            //                   webSocketServiceProvider.ddWatchlistStockList
-            //                       .removeWhere(
-            //                         (ddst) =>
-            //                             ddst.tickerId ==
-            //                             watchlistProvider
-            //                                 .searchedStockList[index]
-            //                                 .tickerId,
-            //                       );
-            //                   Map<String, dynamic> messageData = {
-            //                     "add": false,
-            //                     "tickerIds": [
-            //                       watchlistProvider
-            //                               .searchedStockList[index]
-            //                               .tickerId ??
-            //                           0,
-            //                     ],
-            //                   };
-
-            //                   webSocketServiceProvider.sendMessage(messageData);
-            //                   webSocketServiceProvider.addToRemovedList(
-            //                     webSocketServiceProvider
-            //                             .ddWatchlistStockList[index]
-            //                             .tickerId ??
-            //                         0,
-            //                   );
-            //                   watchlistProvider.isButtonClicked = false;
-            //                   // watchlistProvider.showSearchPage = false;
-            //                   // watchlistProvider.searchedStockNameTextController
-            //                   //     .clear();
-            //                   // List<SelectedTickerModel> selectedStock = [SelectedTickerModel(
-            //                   //     ssTickerId: watchlistProvider
-            //                   //         .searchedStockList[index].tickerId?? 0
-            //                   // )];
-            //                   // await watchlistProvider
-            //                   //     .addToWatchlist(selectedStock);
-            //                   // watchlistProvider.searchedStockList[index].isSelected = true;
-            //                   // await watchlistProvider.fetchWatchList();
-            //                   // await webSocketServiceProvider.disconnect();
-            //                   // await webSocketServiceProvider.connect();
-            //                 }
-            //               },
-            //               child: Icon(
-            //                 // Icons.add_circle_outline,
-            //                 // Icons.check_circle_outline,
-            //                 Icons.bookmark,
-            //                 size: 22,
-            //                 color: Color(0xff1a94f2),
-            //               ),
-            //             )
-            //           : InkWell(
-            //               onTap: () async {
-            //                 print("tap");
-            //                 print(watchlistProvider.isButtonClicked);
-            //                 if (!watchlistProvider.isButtonClicked) {
-            //                   watchlistProvider.isButtonClicked = true;
-
-            //                   webSocketServiceProvider.ddWatchlistStockList.add(
-            //                     DdStock(
-            //                       tickerName: watchlistProvider
-            //                           .searchedStockList[index]
-            //                           .ticker,
-            //                       tickerExchange: watchlistProvider
-            //                           .searchedStockList[index]
-            //                           .tickerExchange,
-            //                       issuerName: watchlistProvider
-            //                           .searchedStockList[index]
-            //                           .tickerIssuerName,
-            //                       tickerId:
-            //                           watchlistProvider
-            //                               .searchedStockList[index]
-            //                               .tickerId ??
-            //                           0,
-            //                     ),
-            //                   );
-
-            //                   // await searchProvider
-            //                   //     .updateSelectedStockListNew(
-            //                   //     index, context);
-            //                   Map<String, dynamic> messageData = {
-            //                     "add": true,
-            //                     "tickerIds": [
-            //                       watchlistProvider
-            //                               .searchedStockList[index]
-            //                               .tickerId ??
-            //                           0,
-            //                     ],
-            //                   };
-
-            //                   webSocketServiceProvider.sendMessage(messageData);
-            //                   webSocketServiceProvider.removeFromRemovedList(
-            //                     webSocketServiceProvider
-            //                             .ddWatchlistStockList[index]
-            //                             .tickerId ??
-            //                         0,
-            //                   );
-            //                   watchlistProvider.isButtonClicked = false;
-
-            //                   // watchlistProvider.showSearchPage = false;
-            //                   // watchlistProvider.searchedStockNameTextController
-            //                   //     .clear();
-
-            //                   List<SelectedTickerModel> selectedStock = [
-            //                     SelectedTickerModel(
-            //                       ssTickerId:
-            //                           watchlistProvider
-            //                               .searchedStockList[index]
-            //                               .tickerId ??
-            //                           0,
-            //                     ),
-            //                   ];
-            //                   // await watchlistProvider
-            //                   //     .addToWatchlist(selectedStock, context);
-
-            //                   // watchlistProvider.searchedStockList[index].isSelected = true;
-            //                   // await watchlistProvider.fetchWatchList();
-            //                   // await webSocketServiceProvider.disconnect();
-            //                   // await webSocketServiceProvider.connect();
-            //                 }
-            //               },
-            //               child: Icon(
-            //                 // Icons.add_circle_outline,
-            //                 // Icons.add_circle_outline,
-            //                 Icons.bookmark_border,
-            //                 size: 22,
-            //                 color: Color(0xff808083), //Color(0xff1a94f2),
-            //               ),
-            //             ),
-            //     ],
-            //   ),
-
-            // old code below
-            // Row(
-            //   children: [
-            //     (webSocketServiceProvider.ddWatchlistStockList.any((item) =>
-            //                 item.tickerId ==
-            //                 watchlistProvider
-            //                     .searchedStockList[index].tickerId) ||
-            //             watchlistProvider.searchedStockList[index].isSelected!)
-            //         // (watchlistProvider.watchList.any((item) =>
-            //         //             item.wlTickerId ==
-            //         //             watchlistProvider
-            //         //                 .searchedStockList[index].tickerId) ||
-            //         //         watchlistProvider.searchedStockList[index].isSelected!)
-            //         ? InkWell(
-            //             onTap: () async {
-            //               print("tap");
-            //               print(watchlistProvider.isButtonClicked);
-            //               if (!watchlistProvider.isButtonClicked) {
-            //                 watchlistProvider.isButtonClicked = true;
-            //                 // await searchProvider
-            //                 //     .updateSelectedStockListNew(
-            //                 //     index, context);
-            //                 Map<String, dynamic> messageData = {
-            //                   "add": false,
-            //                   "tickerIds": [
-            //                     watchlistProvider
-            //                             .searchedStockList[index].tickerId ??
-            //                         0
-            //                   ]
-            //                 };
-            //
-            //                 webSocketServiceProvider.sendMessage(messageData);
-            //                 watchlistProvider.isButtonClicked = false;
-            //                 watchlistProvider.showSearchPage = false;
-            //                 watchlistProvider.searchedStockNameTextController.clear();
-            //                 // List<SelectedTickerModel> selectedStock = [SelectedTickerModel(
-            //                 //     ssTickerId: watchlistProvider
-            //                 //         .searchedStockList[index].tickerId?? 0
-            //                 // )];
-            //                 // await watchlistProvider
-            //                 //     .addToWatchlist(selectedStock);
-            //                 // watchlistProvider.searchedStockList[index].isSelected = true;
-            //                 // await watchlistProvider.fetchWatchList();
-            //                 // await webSocketServiceProvider.disconnect();
-            //                 // await webSocketServiceProvider.connect();
-            //               }
-            //             },
-            //             child: Icon(
-            //               // Icons.add_circle_outline,
-            //               // Icons.check_circle_outline,
-            //               Icons.bookmark,
-            //               size: 22,
-            //               color: Color(0xff1a94f2),
-            //             ),
-            //           )
-            //         : InkWell(
-            //             onTap: () async {
-            //               print("tap");
-            //               print(watchlistProvider.isButtonClicked);
-            //               if (!watchlistProvider.isButtonClicked) {
-            //                 watchlistProvider.isButtonClicked = true;
-            //
-            //                 webSocketServiceProvider.ddWatchlistStockList.add(DdStock(
-            //                   tickerName: watchlistProvider.searchedStockList[index].ticker,
-            //                   tickerExchange: watchlistProvider.searchedStockList[index].tickerExchange,
-            //                   issuerName: watchlistProvider.searchedStockList[index].tickerIssuerName,
-            //                   tickerId: watchlistProvider.searchedStockList[index].tickerId,
-            //                 ));
-            //
-            //                 // await searchProvider
-            //                 //     .updateSelectedStockListNew(
-            //                 //     index, context);
-            //                 Map<String, dynamic> messageData = {
-            //                   "add": true,
-            //                   "tickerIds": [
-            //                     watchlistProvider
-            //                             .searchedStockList[index].tickerId ??
-            //                         0
-            //                   ]
-            //                 };
-            //
-            //                 webSocketServiceProvider.sendMessage(messageData);
-            //                 watchlistProvider.isButtonClicked = false;
-            //
-            //                 watchlistProvider.showSearchPage = false;
-            //                 watchlistProvider.searchedStockNameTextController.clear();
-            //
-            //                 List<SelectedTickerModel> selectedStock = [SelectedTickerModel(
-            //                     ssTickerId: watchlistProvider
-            //                         .searchedStockList[index].tickerId?? 0
-            //                 )];
-            //                 // await watchlistProvider
-            //                 //     .addToWatchlist(selectedStock, context);
-            //
-            //                 // watchlistProvider.searchedStockList[index].isSelected = true;
-            //                 // await watchlistProvider.fetchWatchList();
-            //                 // await webSocketServiceProvider.disconnect();
-            //                 // await webSocketServiceProvider.connect();
-            //               }
-            //             },
-            //             child: Icon(
-            //               // Icons.add_circle_outline,
-            //               // Icons.add_circle_outline,
-            //               Icons.bookmark_border,
-            //               size: 22,
-            //               color: Color(0xff808083), //Color(0xff1a94f2),
-            //             ),
-            //           )
-            //   ],
-            // )
           ],
         ),
       ),

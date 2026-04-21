@@ -151,6 +151,7 @@ class _EnterBrokerDetailsScreenState extends State<EnterBrokerDetailsScreen> {
                               side: const BorderSide(color: Color(0xFF0099CC)),
                             ),
                             onPressed: () async {
+                              print("Save Details Button Pressed");
                               final body = collectFormData();
                               var value = await manageBrokersProvider.doBrokerLogin(
                                 manageBrokersProvider
@@ -218,6 +219,7 @@ class _EnterBrokerDetailsScreenState extends State<EnterBrokerDetailsScreen> {
         padding: const EdgeInsets.only(left: 20, right: 20.0),
         itemBuilder: (context, index) {
           final field = manageBrokersProvider.selectedBrokerFields[index];
+          print("Field Key: ${field.key}, Field Type: ${field.fieldType}");
           return Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [

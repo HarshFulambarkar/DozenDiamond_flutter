@@ -79,7 +79,7 @@ class _LoginMainState extends State<LoginMain> {
           visualDensity: VisualDensity.adaptivePlatformDensity,
         ),
         routes: {
-          "/": (context) => SearchPage(
+          "/": (context) => SearchPageNew(
                 updateIndex: () {},
                 refreshProviderState: false,
               ),
