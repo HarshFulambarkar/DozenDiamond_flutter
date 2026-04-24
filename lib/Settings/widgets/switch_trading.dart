@@ -281,46 +281,8 @@ void handleRealTrading(context) {
   print("inside handleRealTrading");
   print(userConfigProvider.userConfigData.webinarOtpVerified == false);
 
-  // if(userConfigProvider.userConfigData.brokerId == null) {
-  //
-  //   showDialog(
-  //     context: context,
-  //     builder: (context) {
-  //       return integrateBrokerDialog(context);
-  //     },
-  //   );
-  //
-  // } else
-
-  // if(userConfigProvider.userConfigData.aadhaarCardVerified == null || userConfigProvider.userConfigData.aadhaarCardVerified == false) {
-  if(false) {
-
-    showDialog(
-      context: context,
-      builder: (context) {
-        return Utility().aadhaarVerifyDialog(context, false);
-      },
-    );
-
-  } else if(userConfigProvider.userConfigData.webinarOtpVerified == null || userConfigProvider.userConfigData.webinarOtpVerified == false) {
-
-    showDialog(
-      context: context,
-      builder: (context) {
-        return webinarVerifyOtpDialog(context);
-      },
-    );
-
-  } else if(userConfigProvider.userConfigData.isQuestionSolvedInRealTrade == null || userConfigProvider.userConfigData.isQuestionSolvedInRealTrade == false) {
-
-    showDialog(
-      context: context,
-      builder: (context) {
-        return solveQuestionnaireDialog(context);
-      },
-    );
-
-  } else if(userConfigProvider.userConfigData.brokerId == null) {
+  // Directly check for broker integration first
+  if(userConfigProvider.userConfigData.brokerId == null) {
 
     showDialog(
       context: context,
@@ -330,6 +292,7 @@ void handleRealTrading(context) {
     );
 
   } else {
+    // If broker is already integrated, proceed to confirmation dialog
     showDialog(
       context: context,
       builder: (context) {
