@@ -5,10 +5,8 @@ import 'package:dozen_diamond/global/functions/screenWidthRecoginzer.dart';
 import 'package:dozen_diamond/global/models/http_api_exception.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
-
 import '../../AC_trades/models/total_position_trade_action_request.dart';
 import '../../AC_trades/widgets/close_trade_dialog.dart';
-
 import '../../AC_trades/widgets/reduceTrade_dialog.dart';
 import '../../AC_trades/widgets/replicate_trade_review_dialog.dart';
 import 'package:flutter/material.dart';

@@ -1,0 +1,13 @@
+{
+  "status": true,
+  "message": "Stock data retrieved successfully",
+  "success": {
+    "description": "Data fetch successful",
+    "suggestion": "No action required"
+  },
+  "data": [
+    "TCS",
+    "AARTIIND",
+    "WIPRO"
+  ]
+}

@@ -2738,7 +2738,22 @@ String get apiErrorMessage => _apiErrorMessage;
 
     return stepAbove;
   }
+// Step 1: Determine tick size based on price
+double getTickSize(double price) {
+  if (price < 250) return 0.01;
+  if (price >= 250 && price < 20000) return 0.05;
+  return 5.00;
+}
 
+// Step 2: Round step-size to nearest valid value
+double getValidStepSize(double originalStep, double tickSize) {
+  return (originalStep / tickSize).round() * tickSize;
+}
+
+// Step 3: Round any price to nearest valid price
+double getValidPrice(double price, double tickSize) {
+  return (price / tickSize).round() * tickSize;
+}
   Future<double> calculateStepSize({
     required double stepAbove,
     required double initialPurchasePrice
@@ -2747,8 +2762,16 @@ String get apiErrorMessage => _apiErrorMessage;
 
     stepSizeController.text = stepSize.toStringAsFixed(2);
     ladderCreationParametersScreen3.calculatedStepSize = stepSize;
+    double tickSize = getTickSize(initialPurchasePrice);
+    double validStepSize = getValidStepSize(stepSize, tickSize);
+    double validTargetPrice = getValidPrice(targetPrice, tickSize);
 
-    return stepSize;
+
+print("Dhaval is printing stepsize : ${stepSize}");
+print("Dhaval is printing tickSize : ${tickSize}");
+print("Dhaval is printing validStepSize : ${validStepSize}");
+print("Dhaval is printing validTargetPrice : ${validTargetPrice}");
+    return validStepSize;
   }
 
   Future<double> calculateStepAbove({

@@ -1,0 +1,46 @@
+{
+  "status": true,
+  "message": "Trade analytics data for TCS retrieved successfully",
+  "success": {
+    "description": "Data fetch was successful",
+    "suggestion": "No further action needed"
+  },
+  "data": [
+    {
+      "trade_number": 101,
+      "stock_name": "TCS",
+      "bought": 50,
+      "price": "2500.00",
+      "cost": "125000.00",
+      "profit": "5000.00",
+      "purchase_date": "2024-07-12"
+    },
+    {
+      "trade_number": 102,
+      "stock_name": "TCS",
+      "bought": 75,
+      "price": "2550.00",
+      "cost": "191250.00",
+      "profit": "7500.00",
+      "purchase_date": "2024-07-20"
+    },
+    {
+      "trade_number": 103,
+      "stock_name": "TCS",
+      "bought": 100,
+      "price": "2600.00",
+      "cost": "260000.00",
+      "profit": "10000.00",
+      "purchase_date": "2024-08-01"
+    },
+    {
+      "trade_number": 104,
+      "stock_name": "TCS",
+      "bought": 60,
+      "price": "2650.00",
+      "cost": "159000.00",
+      "profit": "6000.00",
+      "purchase_date": "2024-08-10"
+    }
+  ]
+}

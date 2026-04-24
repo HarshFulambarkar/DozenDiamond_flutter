@@ -4,22 +4,17 @@ import 'package:dozen_diamond/ZL_Register/models/get_resgistered_user_request.da
 import 'package:dozen_diamond/ZL_Register/models/mobile_number_codes_model.dart';
 import 'package:dozen_diamond/global/functions/helper.dart';
 import 'package:dozen_diamond/localization/stringConstants.dart';
-import 'package:dozen_diamond/login/models/login_user_request.dart';
+import 'package:dropdown_search/dropdown_search.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:url_launcher/url_launcher.dart';
-import 'package:validators/validators.dart';
 
 import '../../Settings/stateManagement/theme_provider.dart';
-import '../../ZG_signupEmail/models/verify_email_request.dart';
-import '../../ZG_signupEmail/widgets/verify_email_dialog.dart';
 import '../../global/constants/shared_preferences_manager.dart';
 import '../../global/functions/screenWidthRecoginzer.dart';
-import '../../global/models/http_api_exception.dart';
 import '../../global/stateManagement/app_config_provider.dart';
 import '../../global/widgets/common_image.dart';
 import '../../global/widgets/custom_container.dart';
@@ -28,7 +23,6 @@ import '../../global/widgets/my_text_field.dart';
 import '../../navigateAuthentication/stateManagement/navigate_authentication_provider.dart';
 import '../models/country_state_model.dart';
 import '../services/signup_rest_api_service.dart';
-import '../widgets/country_state_selector.dart';
 
 class SignUpPageNew extends StatefulWidget {
   final bool forgotMpin;
@@ -318,9 +312,6 @@ String? validateEmailStrict(String email) {
   late NavigateAuthenticationProvider navigateAuthenticationProvider;
   late ThemeProvider themeProvider;
   late AppConfigProvider appConfigProvider;
-  bool _isObscure = true;
-
-  final bool _isObscure1 = false;
 
   ApiStateProvider? _apiStateProvider;
 
@@ -1029,224 +1020,334 @@ void showValidationErrorSummary() {
       ],
     );
   }
+  
+Widget buildCountryStateField(BuildContext context, double screenWidth) {
+  final countries = widget.countryStateCityData.countries;
+  final states = _country != null
+      ? widget.countryStateCityData.statesOf(_country!)
+      : <String>[];
+  final cities = (_country != null && _state != null)
+      ? widget.countryStateCityData.citiesOf(_country!, _state!)
+      : <City>[];
 
-  Widget buildCountryStateField(BuildContext context, double screenWidth) {
-    final countries = widget.countryStateCityData.countries;
-    final states = _country != null
-        ? widget.countryStateCityData.statesOf(_country!)
-        : <String>[];
-    final cities = (_country != null && _state != null)
-        ? widget.countryStateCityData.citiesOf(_country!, _state!)
-        : <City>[];
+  return Column(
+    crossAxisAlignment: CrossAxisAlignment.stretch,
+    children: [
+      Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            "Country of legal residence",
+            style: GoogleFonts.poppins(
+              fontSize: 13,
+              fontWeight: FontWeight.w300,
+            ),
+          ),
+          const SizedBox(height: 3),
+        ],
+      ),
+      SizedBox(
+        height: 40,
+        child: CustomContainer(
+          padding: 0,
+          borderRadius: 8,
+          margin: EdgeInsets.zero,
+          backgroundColor: (themeProvider.defaultTheme)
+              ? Color(0xffCACAD3)
+              : Color(0xff2c2c31),
+          borderColor: showCountryFieldError
+              ? Color(0xffd41f1f)
+              : (themeProvider.defaultTheme ? Color(0xffCACAD3) : Color(0xff2c2c31)),
+          child: Padding(
+            padding: const EdgeInsets.only(left: 8, right: 8.0),
+            child: DropdownSearch<String>(
+              selectedItem: _country,
+              items: (filter, infiniteScrollProps) => countries,
+              compareFn: (item, selectedItem) => item == selectedItem,
+              onSelected: (selectedItem) {
+                if (selectedItem == null) return;
+                setState(() {
+                  _country = selectedItem;
+                  _state = null;
+                  _city = null;
+                  showCountryFieldError = false;
+                  countryFieldError = "";
+                });
+              },
+              decoratorProps: DropDownDecoratorProps(
+                decoration: InputDecoration(
+                  hintText: 'Select country',
+                  hintStyle: TextStyle(
+                    color: (themeProvider.defaultTheme) ? Colors.black : Colors.white,
+                  ),
+                  border: InputBorder.none,
+                  contentPadding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+                ),
+              ),
+              dropdownBuilder: (context, selectedItem) {
+                return Text(
+                  selectedItem ?? 'Select country',
+                  style: TextStyle(
+                    color: (themeProvider.defaultTheme)
+                        ? Colors.black
+                        : Colors.white,
+                  ),
+                );
+              },
+              popupProps: PopupProps.menu(
+                showSearchBox: true,
+                searchDelay: Duration.zero,
+                searchFieldProps: TextFieldProps(
+                  decoration: InputDecoration(
+                    hintText: 'Search country...',
+                    hintStyle: TextStyle(
+                      color: (themeProvider.defaultTheme)
+                          ? Colors.black
+                          : Colors.white,
+                    ),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                  ),
+                ),
+                menuProps: MenuProps(
+                  backgroundColor: (themeProvider.defaultTheme)
+                      ?Color(0xffCACAD3):Color(0xff2c2c31),
+                ),
+                itemBuilder: (context, item, isDisabled, isSelected) => Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 12),
+                  child: Text(
+                    item,
+                    style: TextStyle(
+                      color: (themeProvider.defaultTheme)
+                          ? Colors.black
+                          : Colors.white,
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ),
+      ),
+      if (showCountryFieldError)
+        Padding(
+          padding: const EdgeInsets.only(top: 4.0),
+          child: Text(countryFieldError, style: strings.warningText),
+        ),
 
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
+      if (states.isNotEmpty)
         Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
-              "Country of legal residence",
-              style: GoogleFonts.poppins(
-                fontSize: 13,
-                fontWeight: FontWeight.w300,
-              ),
+            const SizedBox(height: 15),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  "State of legal residence",
+                  style: GoogleFonts.poppins(
+                    fontSize: 13,
+                    fontWeight: FontWeight.w300,
+                  ),
+                ),
+                const SizedBox(height: 3),
+              ],
             ),
-            const SizedBox(height: 3),
-          ],
-        ),
-        SizedBox(
-          height: 40,
-          child: CustomContainer(
-            padding: 0,
-            borderRadius: 8,
-            margin: EdgeInsets.zero,
-            backgroundColor: (themeProvider.defaultTheme)
-                ?Color(0xffCACAD3):Color(0xff2c2c31),
-            borderColor: showCountryFieldError 
-                ? Color(0xffd41f1f)
-                : (themeProvider.defaultTheme ? Color(0xffCACAD3) : Color(0xff2c2c31)),
-            child: Padding(
-              padding: const EdgeInsets.only(left: 8, right: 8.0),
-              child: DropdownButtonHideUnderline(
-                child: DropdownButton<String>(
-                  isExpanded: true,
-                  dropdownColor: (themeProvider.defaultTheme)
+            SizedBox(
+              height: 40,
+              child: CustomContainer(
+                borderRadius: 8,
+                padding: 0,
+                margin: EdgeInsets.zero,
+                backgroundColor: (themeProvider.defaultTheme)
+                    ? Color(0xffCACAD3)
+                    : Color(0xff2c2c31),
+                borderColor: showStateFieldError
+                    ? Color(0xffd41f1f)
+                    : (themeProvider.defaultTheme ? Color(0xffCACAD3) : Color(0xff2c2c31)),
+                child: Padding(
+                  padding: const EdgeInsets.only(left: 8, right: 8.0),
+                  child: DropdownSearch<String>(
+                    selectedItem: _state,
+                    items: (filter, infiniteScrollProps) => states,
+                    compareFn: (item, selectedItem) => item == selectedItem, 
+                    onSelected: (selectedItem) {
+                      if (selectedItem == null) return;
+                      setState(() {
+                        _state = selectedItem;
+                        _city = null;
+                        showStateFieldError = false;
+                        stateFieldError = "";
+                      });
+                    },
+                    decoratorProps: DropDownDecoratorProps(
+                      decoration: InputDecoration(
+                        
+                        hintStyle: TextStyle(
+                          color: (themeProvider.defaultTheme)
+                              ? Colors.black
+                              : Colors.white,
+                        ),
+                        border: InputBorder.none,
+                        contentPadding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+                      ),
+                    ),
+                    dropdownBuilder: (context, selectedItem) {
+                      return Text(
+                        selectedItem ?? 'Select State',
+                        style: TextStyle(
+                          color: (themeProvider.defaultTheme)
+                              ? Colors.black
+                              : Colors.white,
+                        ),
+                      );
+                    },
+                    popupProps: PopupProps.menu(
+                      showSearchBox: true,
+                      searchDelay: Duration.zero,
+                      searchFieldProps: TextFieldProps(
+                        decoration: InputDecoration(
+                          hintText: 'Search state...',
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                        ),
+                      ),
+                      menuProps: MenuProps(
+                        backgroundColor: (themeProvider.defaultTheme)
                       ?Color(0xffCACAD3):Color(0xff2c2c31),
-                  hint: Text(
-                    'Select country',
+                      ),
+                      itemBuilder: (context, item, isDisabled, isSelected) => Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 12),
+                  child: Text(
+                    item,
                     style: TextStyle(
                       color: (themeProvider.defaultTheme)
-                          ?Colors.black:Colors.white,
+                          ? Colors.black
+                          : Colors.white,
                     ),
                   ),
-                  value: _country,
-                  menuMaxHeight: 200,
-                  items: countries
-                      .map((c) => DropdownMenuItem(value: c, child: Text(c)))
-                      .toList(),
-                  onChanged: (c) {
-                    if (c == null) return;
-                    setState(() {
-                      _country = c;
-                      _state = null;
-                      _city = null;
-                      showCountryFieldError = false;
-                      countryFieldError = "";
-                    });
-                  },
+                ),
+                    ),
+                  ),
                 ),
               ),
             ),
-          ),
+            if (showStateFieldError)
+              Padding(
+                padding: const EdgeInsets.only(top: 4.0),
+                child: Text(stateFieldError, style: strings.warningText),
+              ),
+          ],
         ),
-        if (showCountryFieldError)
-          Padding(
-            padding: const EdgeInsets.only(top: 4.0),
-            child: Text(countryFieldError, style: strings.warningText),
-          ),
 
-        if (states.isNotEmpty)
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              SizedBox(height: 15),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    "State of legal residence",
-                    style: GoogleFonts.poppins(
-                      fontSize: 13,
-                      fontWeight: FontWeight.w300,
-                    ),
+      if (cities.isNotEmpty)
+        Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const SizedBox(height: 15),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  "City of legal residence",
+                  style: GoogleFonts.poppins(
+                    fontSize: 13,
+                    fontWeight: FontWeight.w300,
                   ),
-                  const SizedBox(height: 3),
-                ],
-              ),
-              SizedBox(
-                height: 40,
-                child: CustomContainer(
-                  borderRadius: 8,
-                  padding: 0,
-                  margin: EdgeInsets.zero,
-                  backgroundColor: (themeProvider.defaultTheme)
-                      ?Color(0xffCACAD3):Color(0xff2c2c31),
-                  borderColor: showStateFieldError
-                      ? Color(0xffd41f1f)
-                      : (themeProvider.defaultTheme ? Color(0xffCACAD3) : Color(0xff2c2c31)),
-                  child: Padding(
-                    padding: const EdgeInsets.only(left: 8, right: 8.0),
-                    child: DropdownButtonHideUnderline(
-                      child: DropdownButton<String>(
-                        dropdownColor: (themeProvider.defaultTheme)
-                            ?Color(0xffCACAD3):Color(0xff2c2c31),
-                        isExpanded: true,
-                        hint: Text(
-                          'Select State',
-                          style: TextStyle(
-                            color: (themeProvider.defaultTheme)
-                                ?Colors.black:Colors.white,
-                          ),
+                ),
+                const SizedBox(height: 3),
+              ],
+            ),
+            SizedBox(
+              height: 40,
+              child: CustomContainer(
+                borderRadius: 8,
+                padding: 0,
+                margin: EdgeInsets.zero,
+                backgroundColor: (themeProvider.defaultTheme)
+                    ? Color(0xffCACAD3)
+                    : Color(0xff2c2c31),
+                borderColor: showCityFieldError
+                    ? Color(0xffd41f1f)
+                    : (themeProvider.defaultTheme ? Color(0xffCACAD3) : Color(0xff2c2c31)),
+                child: Padding(
+                  padding: const EdgeInsets.only(left: 8, right: 8.0),
+                  child: DropdownSearch<City>(
+                    selectedItem: _city,
+                    items: (filter, infiniteScrollProps) => cities,
+                    compareFn: (item, selectedItem) => item.name == selectedItem.name, itemAsString: (City city) => city.name,
+                    onSelected: (selectedItem) {
+                      if (selectedItem == null) return;
+                      setState(() {
+                        _city = selectedItem;
+                        showCityFieldError = false;
+                        cityFieldError = "";
+                      });
+                    },
+                    decoratorProps: DropDownDecoratorProps(
+                      decoration: InputDecoration(
+                        hintStyle: TextStyle(
+                          color: (themeProvider.defaultTheme)
+                              ? Colors.black
+                              : Colors.white,
                         ),
-                        value: _state,
-                        menuMaxHeight: 200,
-                        items: states
-                            .map((c) => DropdownMenuItem(value: c, child: Text(c)))
-                            .toList(),
-                        onChanged: (s) {
-                          if (s == null) return;
-                          setState(() {
-                            _state = s;
-                            _city = null;
-                            showStateFieldError = false;
-                            stateFieldError = "";
-                          });
-                        },
+                        border: InputBorder.none,
+                        contentPadding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
                       ),
                     ),
-                  ),
-                ),
-              ),
-              if (showStateFieldError)
-                Padding(
-                  padding: const EdgeInsets.only(top: 4.0),
-                  child: Text(stateFieldError, style: strings.warningText),
-                ),
-            ],
-          ),
-
-        if(cities.isNotEmpty)
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              SizedBox(height: 15),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    "City of legal residence",
-                    style: GoogleFonts.poppins(
-                      fontSize: 13,
-                      fontWeight: FontWeight.w300,
-                    ),
-                  ),
-                  const SizedBox(height: 3),
-                ],
-              ),
-              SizedBox(
-                height: 40,
-                child: CustomContainer(
-                  borderRadius: 8,
-                  padding: 0,
-                  margin: EdgeInsets.zero,
-                  backgroundColor: (themeProvider.defaultTheme)
-                      ?Color(0xffCACAD3):Color(0xff2c2c31),
-                  borderColor: showCityFieldError
-                      ? Color(0xffd41f1f)
-                      : (themeProvider.defaultTheme ? Color(0xffCACAD3) : Color(0xff2c2c31)),
-                  child: Padding(
-                    padding: const EdgeInsets.only(left: 8, right: 8.0),
-                    child: DropdownButtonHideUnderline(
-                      child: DropdownButton<City>(
-                        dropdownColor: (themeProvider.defaultTheme)
-                            ?Color(0xffCACAD3):Color(0xff2c2c31),
-                        isExpanded: true,
-                        hint: Text(
-                          'Select City',
-                          style: TextStyle(
-                            color: (themeProvider.defaultTheme)
-                                ?Colors.black:Colors.white,
+                    dropdownBuilder: (context, selectedItem) {
+                      return Text(
+                        selectedItem?.name ?? 'Select City',
+                        style: TextStyle(
+                          color: (themeProvider.defaultTheme)
+                              ? Colors.black
+                              : Colors.white,
+                        ),
+                      );
+                    },
+                    popupProps: PopupProps.menu(
+                      showSearchBox: true,
+                      searchDelay: Duration.zero,
+                      searchFieldProps: TextFieldProps(
+                        decoration: InputDecoration(
+                          hintText: 'Search city...',
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(8),
                           ),
                         ),
-                        value: _city,
-                        menuMaxHeight: 200,
-                        items: cities
-                            .map((c) => DropdownMenuItem(value: c, child: Text(c.name)))
-                            .toList(),
-                        onChanged: (s) {
-                          if (s == null) return;
-                          setState(() {
-                            _city = s;
-                            showCityFieldError = false;
-                            cityFieldError = "";
-                          });
-                        },
                       ),
+                      menuProps: MenuProps(
+                        backgroundColor: (themeProvider.defaultTheme)
+                      ?Color(0xffCACAD3):Color(0xff2c2c31),
+                      ),
+                      itemBuilder: (context, item, isDisabled, isSelected) => Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 12),
+                  child: Text(
+                    item.name,
+                    style: TextStyle(
+                      color: (themeProvider.defaultTheme)
+                          ? Colors.black
+                          : Colors.white,
+                    ),
+                  ),
+                ),
                     ),
                   ),
                 ),
               ),
-              if (showCityFieldError)
-                Padding(
-                  padding: const EdgeInsets.only(top: 4.0),
-                  child: Text(cityFieldError, style: strings.warningText),
-                ),
-            ],
-          ),
-      ],
-    );
-  }
+            ),
+            if (showCityFieldError)
+              Padding(
+                padding: const EdgeInsets.only(top: 4.0),
+                child: Text(cityFieldError, style: strings.warningText),
+              ),
+          ],
+        ),
+    ],
+  );
+}
 
 Widget buildEmailField(BuildContext context, double screenWidth) {
   return Column(

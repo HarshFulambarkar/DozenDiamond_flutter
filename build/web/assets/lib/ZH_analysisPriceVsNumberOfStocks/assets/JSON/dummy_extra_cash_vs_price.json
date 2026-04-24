@@ -1,0 +1,53 @@
+{
+  "status": true,
+  "message": "Extra cash vs price TCS retrieved successfully",
+  "data": [
+    {
+      "price_of_stock": 540,
+      "extra_cash": 0,
+      "type": "Buy"
+    },
+    {
+      "price_of_stock": 538.52,
+      "extra_cash": 39.2,
+      "type": "Buy"
+    },
+    {
+      "price_of_stock": 538,
+      "extra_cash": 59.2,
+      "type": "Buy"
+    },
+    {
+      "price_of_stock": 537,
+      "extra_cash": 79.2,
+      "type": "Buy"
+    },
+    {
+      "price_of_stock": 538,
+      "extra_cash": 99.2,
+      "type": "Sell"
+    },
+    {
+      "price_of_stock": 539.2,
+      "extra_cash": 127.2,
+      "type": "Sell"
+    },
+    {
+      "price_of_stock": 540,
+      "extra_cash": 147.2,
+      "type": "Sell"
+    },
+    {
+      "price_of_stock": 538.2,
+      "extra_cash": 199.2,
+      "type": "Buy"
+    },
+    {
+      "price_of_stock": 540,
+      "extra_cash": 219.2,
+      "type": "Sell"
+    }
+  ]
+
+
+}

@@ -1,0 +1,404 @@
+{
+  "status": true,
+  "message": "Profit vs Price graph data retrieved successfully",
+  "success": {
+    "description": "Graph data fetched successfully",
+    "suggestion": "No further action required"
+  },
+  "data": [
+    {
+      "trade_number": 1,
+      "stock_name": "TCS",
+      "price": "550",
+      "Units": "1000",
+      "Total Units": "1000",
+      "type": "Buy",
+      "remainingCash": "450000",
+      "profit": "0"
+    },
+    {
+      "trade_number": 2,
+      "stock_name": "TCS",
+      "price": "525",
+      "Units": "50",
+      "Total Units": "1050",
+      "type": "Buy",
+      "remainingCash": "423750",
+      "profit": "-25000"
+    },
+    {
+      "trade_number": 3,
+      "stock_name": "TCS",
+      "price": "550",
+      "Units": "-50",
+      "Total Units": "1000",
+      "type": "Sell",
+      "remainingCash": "451250",
+      "profit": "1250"
+    },
+    {
+      "trade_number": 4,
+      "stock_name": "TCS",
+      "price": "575",
+      "Units": "-50",
+      "Total Units": "950",
+      "type": "Sell",
+      "remainingCash": "480000",
+      "profit": "26250"
+    },
+    {
+      "trade_number": 5,
+      "stock_name": "TCS",
+      "price": "600",
+      "Units": "-50",
+      "Total Units": "900",
+      "type": "Sell",
+      "remainingCash": "510000",
+      "profit": "50000"
+    },
+    {
+      "trade_number": 6,
+      "stock_name": "TCS",
+      "price": "575",
+      "Units": "50",
+      "Total Units": "950",
+      "type": "Buy",
+      "remainingCash": "481250",
+      "profit": "27500"
+    },
+    {
+      "trade_number": 7,
+      "stock_name": "TCS",
+      "price": "550",
+      "Units": "50",
+      "Total Units": "1000",
+      "type": "Buy",
+      "remainingCash": "453750",
+      "profit": "3750"
+    },
+    {
+      "trade_number": 8,
+      "stock_name": "TCS",
+      "price": "525",
+      "Units": "50",
+      "Total Units": "1050",
+      "type": "Buy",
+      "remainingCash": "427500",
+      "profit": "-21250"
+    },
+    {
+      "trade_number": 9,
+      "stock_name": "TCS",
+      "price": "500",
+      "Units": "50",
+      "Total Units": "1100",
+      "type": "Buy",
+      "remainingCash": "402500",
+      "profit": "-47500"
+    },
+    {
+      "trade_number": 10,
+      "stock_name": "TCS",
+      "price": "525",
+      "Units": "-50",
+      "Total Units": "1050",
+      "type": "Sell",
+      "remainingCash": "428750",
+      "profit": "-20000"
+    },
+    {
+      "trade_number": 11,
+      "stock_name": "TCS",
+      "price": "550",
+      "Units": "-50",
+      "Total Units": "1000",
+      "type": "Sell",
+      "remainingCash": "456250",
+      "profit": "6250"
+    },
+    {
+      "trade_number": 12,
+      "stock_name": "TCS",
+      "price": "575",
+      "Units": "-50",
+      "Total Units": "950",
+      "type": "Sell",
+      "remainingCash": "485000",
+      "profit": "31250"
+    },
+    {
+      "trade_number": 13,
+      "stock_name": "TCS",
+      "price": "550",
+      "Units": "50",
+      "Total Units": "1000",
+      "type": "Buy",
+      "remainingCash": "457500",
+      "profit": "7500"
+    },
+    {
+      "trade_number": 14,
+      "stock_name": "TCS",
+      "price": "525",
+      "Units": "50",
+      "Total Units": "1050",
+      "type": "Buy",
+      "remainingCash": "431250",
+      "profit": "-17500"
+    },
+    {
+      "trade_number": 15,
+      "stock_name": "TCS",
+      "price": "500",
+      "Units": "50",
+      "Total Units": "1100",
+      "type": "Buy",
+      "remainingCash": "406250",
+      "profit": "-43750"
+    },
+    {
+      "trade_number": 16,
+      "stock_name": "TCS",
+      "price": "525",
+      "Units": "-50",
+      "Total Units": "1050",
+      "type": "Sell",
+      "remainingCash": "432500",
+      "profit": "-16250"
+    },
+    {
+      "trade_number": 17,
+      "stock_name": "TCS",
+      "price": "550",
+      "Units": "-50",
+      "Total Units": "1000",
+      "type": "Sell",
+      "remainingCash": "460000",
+      "profit": "10000"
+    },
+    {
+      "trade_number": 18,
+      "stock_name": "TCS",
+      "price": "575",
+      "Units": "-50",
+      "Total Units": "950",
+      "type": "Sell",
+      "remainingCash": "488750",
+      "profit": "35000"
+    },
+    {
+      "trade_number": 19,
+      "stock_name": "TCS",
+      "price": "550",
+      "Units": "50",
+      "Total Units": "1000",
+      "type": "Buy",
+      "remainingCash": "461250",
+      "profit": "11250"
+    },
+    {
+      "trade_number": 20,
+      "stock_name": "TCS",
+      "price": "525",
+      "Units": "50",
+      "Total Units": "1050",
+      "type": "Buy",
+      "remainingCash": "435000",
+      "profit": "-13750"
+    },
+    {
+      "trade_number": 21,
+      "stock_name": "TCS",
+      "price": "500",
+      "Units": "50",
+      "Total Units": "1100",
+      "type": "Buy",
+      "remainingCash": "410000",
+      "profit": "-40000"
+    },
+    {
+      "trade_number": 22,
+      "stock_name": "TCS",
+      "price": "475",
+      "Units": "50",
+      "Total Units": "1150",
+      "type": "Buy",
+      "remainingCash": "386250",
+      "profit": "-67500"
+    },
+    {
+      "trade_number": 23,
+      "stock_name": "TCS",
+      "price": "450",
+      "Units": "50",
+      "Total Units": "1200",
+      "type": "Buy",
+      "remainingCash": "363750",
+      "profit": "-96250"
+    },
+    {
+      "trade_number": 24,
+      "stock_name": "TCS",
+      "price": "475",
+      "Units": "-50",
+      "Total Units": "1150",
+      "type": "Sell",
+      "remainingCash": "387500",
+      "profit": "-66250"
+    },
+    {
+      "trade_number": 25,
+      "stock_name": "TCS",
+      "price": "500",
+      "Units": "-50",
+      "Total Units": "1100",
+      "type": "Sell",
+      "remainingCash": "412500",
+      "profit": "-37500"
+    },
+    {
+      "trade_number": 26,
+      "stock_name": "TCS",
+      "price": "525",
+      "Units": "-50",
+      "Total Units": "1050",
+      "type": "Sell",
+      "remainingCash": "438750",
+      "profit": "-10000"
+    },
+    {
+      "trade_number": 27,
+      "stock_name": "TCS",
+      "price": "550",
+      "Units": "-50",
+      "Total Units": "1000",
+      "type": "Sell",
+      "remainingCash": "466250",
+      "profit": "16250"
+    },
+    {
+      "trade_number": 28,
+      "stock_name": "TCS",
+      "price": "575",
+      "Units": "-50",
+      "Total Units": "950",
+      "type": "Sell",
+      "remainingCash": "495000",
+      "profit": "41250"
+    },
+    {
+      "trade_number": 29,
+      "stock_name": "TCS",
+      "price": "600",
+      "Units": "-50",
+      "Total Units": "900",
+      "type": "Sell",
+      "remainingCash": "525000",
+      "profit": "65000"
+    },
+    {
+      "trade_number": 30,
+      "stock_name": "TCS",
+      "price": "575",
+      "Units": "50",
+      "Total Units": "950",
+      "type": "Buy",
+      "remainingCash": "496250",
+      "profit": "42500"
+    },
+    {
+      "trade_number": 31,
+      "stock_name": "TCS",
+      "price": "550",
+      "Units": "50",
+      "Total Units": "1000",
+      "type": "Buy",
+      "remainingCash": "468750",
+      "profit": "18750"
+    },
+    {
+      "trade_number": 32,
+      "stock_name": "TCS",
+      "price": "525",
+      "Units": "50",
+      "Total Units": "1050",
+      "type": "Buy",
+      "remainingCash": "442500",
+      "profit": "-6250"
+    },
+    {
+      "trade_number": 33,
+      "stock_name": "TCS",
+      "price": "500",
+      "Units": "50",
+      "Total Units": "1100",
+      "type": "Buy",
+      "remainingCash": "417500",
+      "profit": "-32500"
+    },
+    {
+      "trade_number": 34,
+      "stock_name": "TCS",
+      "price": "525",
+      "Units": "-50",
+      "Total Units": "1050",
+      "type": "Sell",
+      "remainingCash": "443750",
+      "profit": "-5000"
+    },
+    {
+      "trade_number": 35,
+      "stock_name": "TCS",
+      "price": "550",
+      "Units": "-50",
+      "Total Units": "1000",
+      "type": "Sell",
+      "remainingCash": "471250",
+      "profit": "21250"
+    },
+    {
+      "trade_number": 36,
+      "stock_name": "TCS",
+      "price": "575",
+      "Units": "-50",
+      "Total Units": "950",
+      "type": "Sell",
+      "remainingCash": "500000",
+      "profit": "46250"
+    },
+    {
+      "trade_number": 37,
+      "stock_name": "TCS",
+      "price": "600",
+      "Units": "-50",
+      "Total Units": "900",
+      "type": "Sell",
+      "remainingCash": "530000",
+      "profit": "70000"
+    },
+    {
+      "trade_number": 38,
+      "stock_name": "TCS",
+      "price": "625",
+      "Units": "-50",
+      "Total Units": "850",
+      "type": "Sell",
+      "remainingCash": "561250",
+      "profit": "92500"
+    },
+    {
+      "trade_number": 39,
+      "stock_name": "TCS",
+      "price": "600",
+      "Units": "50",
+      "Total Units": "900",
+      "type": "Buy",
+      "remainingCash": "531250",
+      "profit": "71250"
+    }
+  ]
+
+
+
+
+}

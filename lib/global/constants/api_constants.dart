@@ -24,6 +24,7 @@ class ApiConstant {
       // 'https://8q9xl3gc-3000.inc1.devtunnels.ms'; // Nitesh
       // 'https://w9xkc9m0-3000.inc1.devtunnels.ms'; //Ayush
       // 'https://jrvtgmq3-3000.inc1.devtunnels.ms'; //Arman
+      // 'https://pxkjng5f-3000.inc1.devtunnels.ms';    //Khomesh
 
   // "https://3.109.144.93";
   // 'https://temp.dozendiamonds.com'; //app.dozendiamonds.com
