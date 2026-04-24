@@ -329,59 +329,67 @@ class _ReviewLadderDialogNewState extends State<ReviewLadderDialogNew> {
     }
   }
 
-  Future<void> createLadderRequest() async {
-    Utility.showLoadingDialog();
-    try {
-      double extraCash = await getExtraCashPerMonthOfAStock(
-          stockName: widget.stockName,
-          initialBuyPrice: double.tryParse(widget.initialPurchasePrice) ?? 0.0,
-          targetPrice: _targetPrice,
-          noOfStepsAbove: widget.numberOfStepsAbove,
-          noOfStepsBelow: widget.numberOfStepsBelow,
-          defaultBuySellQty: _defaultBuySellQty,
-          stepSize: _stepSize,
-          initialBuyQty: _initialBuyQty);
-      print("here is the extraCash that is sending ${extraCash}");
-      // print(widget.numberOfStepsBelow);
-      CreateLadderResponse? res = await LadderRestApiService().createLadder(
-        CreateLadderRequest(
-            ladTickerId: widget.tickerId,
-            ladDefaultBuySellQuantity: _defaultBuySellQty,
-            ladInitialBuyQuantity: _initialBuyQty,
-            ladInitialBuyPrice: double.tryParse(widget.initialPurchasePrice),
-            ladMinimumPrice: 0,
-            ladTargetPrice: _targetPrice,
-            ladCashAllocated: widget.allocatedCash,
-            ladCashNeeded: widget.cashNeeded,
-            ladNumOfStepsAbove: widget.numberOfStepsAbove,
-            ladNumOfStepsBelow: widget.numberOfStepsBelow,
-            ladStepSize: _stepSize,
-            targetPriceMultiplier: widget.ladTargetPriceMultiplier,
-            continueTradingAfterHittingTargetPrice:
-                _continueTradingAfterHittingTargetPrice,
-            ladCashAssigned: widget.assignedCash,
-            estimatedExtraCashPerMonth: extraCash),
-      );
-      Utility.hideLoadingDialog();
-      Navigator.of(context).pop("ladderCreated");
+Future<void> createLadderRequest() async {
+  Utility.showLoadingDialog();
+  try {
+    double extraCash = await getExtraCashPerMonthOfAStock(
+        stockName: widget.stockName,
+        initialBuyPrice: double.tryParse(widget.initialPurchasePrice) ?? 0.0,
+        targetPrice: _targetPrice,
+        noOfStepsAbove: widget.numberOfStepsAbove,
+        noOfStepsBelow: widget.numberOfStepsBelow,
+        defaultBuySellQty: _defaultBuySellQty,
+        stepSize: _stepSize,
+        initialBuyQty: _initialBuyQty);
+    
+    // ✅ Round extraCash to 2 decimal places
+    extraCash = double.parse(extraCash.toStringAsFixed(2));
+    
+    // ✅ Round stepSize to 2 decimal places
+    double roundedStepSize = double.parse(_stepSize.toStringAsFixed(2));
+    
+    print("here is the extraCash that is sending ${extraCash}");
+    print("here is the stepSize that is sending ${roundedStepSize}");
+    
+    CreateLadderResponse? res = await LadderRestApiService().createLadder(
+      CreateLadderRequest(
+          ladTickerId: widget.tickerId,
+          ladDefaultBuySellQuantity: _defaultBuySellQty,
+          ladInitialBuyQuantity: _initialBuyQty,
+          ladInitialBuyPrice: double.tryParse(widget.initialPurchasePrice),
+          ladMinimumPrice: 0,
+          ladTargetPrice: _targetPrice,
+          ladCashAllocated: widget.allocatedCash,
+          ladCashNeeded: widget.cashNeeded,
+          ladNumOfStepsAbove: widget.numberOfStepsAbove,
+          ladNumOfStepsBelow: widget.numberOfStepsBelow,
+          ladStepSize: roundedStepSize, // ✅ Use rounded stepSize
+          targetPriceMultiplier: widget.ladTargetPriceMultiplier,
+          continueTradingAfterHittingTargetPrice:
+              _continueTradingAfterHittingTargetPrice,
+          ladCashAssigned: widget.assignedCash,
+          estimatedExtraCashPerMonth: extraCash), // ✅ extraCash is already rounded
+    );
+    Utility.hideLoadingDialog();
+    Navigator.of(context).pop("ladderCreated");
 
-      Fluttertoast.showToast(msg: res!.message!);
-    } on HttpApiException catch (err) {
+    Fluttertoast.showToast(msg: res!.message!);
+  } on HttpApiException catch (err) {
+    Utility.hideLoadingDialog();
+    print("error in the createLadder function $err");
+    showDialog(
+      context: context,
+      builder: (context) {
+        return errorDialog(err.errorTitle);
+      },
+    ).then((onValue) {
       Utility.hideLoadingDialog();
-      print("error in the createLadder function $err");
-      showDialog(
-        context: context,
-        builder: (context) {
-          return errorDialog(err.errorTitle);
-        },
-      ).then((onValue) {
-        Utility.hideLoadingDialog();
-        if (onValue == 'ladderCreated') {
-          Navigator.of(context).pop("ladderCreated");
-        }
-      });
-    }
+      if (onValue == 'ladderCreated') {
+        Navigator.of(context).pop("ladderCreated");
+      }
+    });
   }
+}
 
   Widget errorDialog(String msg) {
     return AlertDialog(
